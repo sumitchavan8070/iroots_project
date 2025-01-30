@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iroots/src/utility/constant/asset_path.dart';
 
+
 class AcademicsCard extends StatefulWidget {
-  const AcademicsCard({super.key});
+  final void Function(int) onPressed; // Function that takes an int parameter
+
+
+  const AcademicsCard({super.key, required this.onPressed});
 
   @override
   State<AcademicsCard> createState() => _AcademicsCardState();
@@ -55,29 +59,35 @@ class _AcademicsCardState extends State<AcademicsCard> {
             ),
             itemBuilder: (context, index) {
               final item = items[index];
-              return Container(
-                clipBehavior: Clip.hardEdge,
-                decoration:
-                    BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 40,
-                      width: 32,
-                      padding: const EdgeInsets.all(6),
-                      color: const Color(0xFF1575FF),
-                      child: Image.asset(item["icon"]),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      item["text"],
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF334155),
-                          ),
-                    )
-                  ],
+              return GestureDetector(
+               onTap: () {
+                 widget.onPressed(index);
+                 debugPrint("here is the taped index ");
+               },
+                child: Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration:
+                      BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 32,
+                        padding: const EdgeInsets.all(6),
+                        color: const Color(0xFF1575FF),
+                        child: Image.asset(item["icon"]),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        item["text"],
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF334155),
+                            ),
+                      )
+                    ],
+                  ),
                 ),
               );
 

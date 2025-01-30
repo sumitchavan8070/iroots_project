@@ -8,7 +8,7 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:iroots/src/controller/home/student/student_home_controller.dart';
 import 'package:iroots/src/ui/dashboard/student/components/academics_card.dart';
-import 'package:iroots/src/ui/dashboard/student/components/getAttendanceStatus.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
 import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
 
 class StudentHomePageScreen extends StatelessWidget {
@@ -23,21 +23,32 @@ class StudentHomePageScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else {
           return Scaffold(
-
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
+                  todayAttendanceWidget(logic),
                   const SizedBox(height: 30),
-                  const StudentDetailCard(),
+                  StudentDetailCard(
+                    studentName: logic.studentData?.name ?? "",
+                    date: logic.currentDate ?? "N/A",
+                    classId: logic.studentData?.studentClass ?? "N/A",
+                    // percentage: logic.studentData.,
+                    rollNumber: logic.studentData?.rollNo ?? "N/A",
+                    userImage: logic.studentData?.profileAvatar ?? "",
+                  ),
                   const SizedBox(height: 18),
-                  const AcademicsCard(),
+                  AcademicsCard(
+                    onPressed: (i) {
+                      logic.onItemTapped(i);
+                    },
+                  ),
                   const AttendanceView(
                     attendanceData: {
-                      "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
-                      "absent": ["2025-01-08",  "2025-01-18", "2025-01-29"],
-                      "holidays": ["2025-01-17"],
-                      "leaves" :  ["2025-01-29", ]
+                      "present": [ "2025-01-02", "2025-01-03"],
+                      "absent": ["2025-01-13"],
+                      "holidays": ["2025-01-04"],
+                      "leaves": ["2025-01-07"]
                     },
                   ),
                   Padding(
@@ -51,14 +62,21 @@ class StudentHomePageScreen extends StatelessWidget {
                               height: 43,
                               width: 171,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: const Color(0xFF0DB166).withOpacity(0.3)),
-                                  color: const Color(0xFF0DB166).withOpacity(0.1),
+                                  border: Border.all(
+                                      color: const Color(0xFF0DB166)
+                                          .withOpacity(0.3)),
+                                  color:
+                                      const Color(0xFF0DB166).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
                                   "Regional Holiday",
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: const Color(0xFF0DB166), fontWeight: FontWeight.w600),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: const Color(0xFF0DB166),
+                                          fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -66,14 +84,21 @@ class StudentHomePageScreen extends StatelessWidget {
                               height: 43,
                               width: 171,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: const Color(0xFF9F7CCB).withOpacity(0.3)),
-                                  color: const Color(0xFF9F7CCB).withOpacity(0.1),
+                                  border: Border.all(
+                                      color: const Color(0xFF9F7CCB)
+                                          .withOpacity(0.3)),
+                                  color:
+                                      const Color(0xFF9F7CCB).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
                                   "National Holiday",
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: const Color(0xFF9F7CCB), fontWeight: FontWeight.w600),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: const Color(0xFF9F7CCB),
+                                          fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -87,14 +112,21 @@ class StudentHomePageScreen extends StatelessWidget {
                               height: 43,
                               width: 171,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: const Color(0xFFFF0000).withOpacity(0.3)),
-                                  color: const Color(0xFFFF0000).withOpacity(0.1),
+                                  border: Border.all(
+                                      color: const Color(0xFFFF0000)
+                                          .withOpacity(0.3)),
+                                  color:
+                                      const Color(0xFFFF0000).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
                                   "Reminders",
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: const Color(0xFFFF0000), fontWeight: FontWeight.w600),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: const Color(0xFFFF0000),
+                                          fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -102,14 +134,21 @@ class StudentHomePageScreen extends StatelessWidget {
                               height: 43,
                               width: 171,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: const Color(0xFF1575FF).withOpacity(0.3)),
-                                  color: const Color(0xFF1575FF).withOpacity(0.1),
+                                  border: Border.all(
+                                      color: const Color(0xFF1575FF)
+                                          .withOpacity(0.3)),
+                                  color:
+                                      const Color(0xFF1575FF).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Center(
                                 child: Text(
                                   "My Leaves",
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: const Color(0xFF1575FF), fontWeight: FontWeight.w600),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: const Color(0xFF1575FF),
+                                          fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -134,8 +173,8 @@ class StudentHomePageScreen extends StatelessWidget {
                       height: 5,
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -162,8 +201,8 @@ class StudentHomePageScreen extends StatelessWidget {
                       height: 5,
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 0),
                       child: GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -186,8 +225,8 @@ class StudentHomePageScreen extends StatelessWidget {
                     ),
                     _buildCalendarMonth(logic),
                     Card(
-                      margin:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
                       elevation: 2,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),

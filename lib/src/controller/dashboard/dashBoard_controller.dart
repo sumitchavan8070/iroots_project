@@ -70,10 +70,12 @@ class DashBoardController extends GetxController {
   }
 
   Future<void> _getAdminClasses() async {
+    // final url = "$baseUrlName"baseUrlName
     try {
       final response = await http.get(
-          Uri.parse("${baseUrlName}UserCredentials/GetClass"),
-          headers: credentials);
+        Uri.parse("${baseUrlName}/UserCredentials/GetClass"),
+        headers: credentials,
+      );
 
       print("sdfghfhjfb${response.statusCode}");
 

@@ -6,7 +6,22 @@ import 'package:iroots/src/ui/dashboard/student/components/allocation_tracker_pa
 import 'package:iroots/src/utility/constant/asset_path.dart';
 
 class StudentDetailCard extends StatefulWidget {
-  const StudentDetailCard({super.key});
+  final String? studentName;
+  final String? classId;
+  final String? rollNumber;
+  final String? date;
+  final String? percentage;
+  final String? userImage;
+
+  const StudentDetailCard({
+    super.key,
+    this.studentName,
+    this.classId,
+    this.rollNumber,
+    this.date,
+    this.percentage,
+    this.userImage,
+  });
 
   @override
   State<StudentDetailCard> createState() => _StudentDetailCardState();
@@ -15,6 +30,7 @@ class StudentDetailCard extends StatefulWidget {
 class _StudentDetailCardState extends State<StudentDetailCard> {
   @override
   Widget build(BuildContext context) {
+    debugPrint("widget.userImage ${widget.userImage}");
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
@@ -24,8 +40,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius:
-                BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12))),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12), topRight: Radius.circular(12))),
         child: Column(
           children: [
             Row(
@@ -34,12 +50,14 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
               children: [
                 Row(
                   children: [
+                    // Image.network(widget.userImage ?? "N/A")??
                     ClipOval(
-                      child: Image.asset(
+                      child:   Image.asset(
                         AssetPath.onePNG,
                         height: 40,
                         width: 40,
-                        fit: BoxFit.cover, // Ensures the image covers the circular area properly
+                        fit: BoxFit
+                            .cover, // Ensures the image covers the circular area properly
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -47,28 +65,34 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Guy Hawkins",
+                          widget.studentName ?? "N/A",
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge
-                              ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
                         ),
                         RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: 'Class: X-B ',
+                                text: widget.classId ?? "N/A",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
-                                    ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
                               ),
                               TextSpan(
-                                text: ' | Roll No: 12 ',
+                                text: ' | Roll No: ${widget.rollNumber ?? "N/A"} ',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
-                                    ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -89,20 +113,23 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                   children: [
                     Row(
                       children: [
-                        SvgPicture.asset(AssetPath.calendar, height: 30, width: 30),
+                        SvgPicture.asset(AssetPath.calendar,
+                            height: 30, width: 30),
                         const SizedBox(width: 14),
                         Text(
                           'Attendance',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
-                              ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
                         )
                       ],
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "02-Jan-2024",
+                      widget.date ?? "N/A",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -113,7 +140,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 8),
                           margin: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.1),
@@ -123,15 +151,17 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                               borderRadius: BorderRadius.circular(4)),
                           child: Text(
                             "Present",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 8,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 8,
+                                    ),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 8),
                           margin: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.1),
@@ -141,15 +171,17 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                               borderRadius: BorderRadius.circular(4)),
                           child: Text(
                             "Absent",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 8,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 8,
+                                    ),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 8),
                           margin: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.1),
@@ -159,11 +191,12 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                               borderRadius: BorderRadius.circular(4)),
                           child: Text(
                             "Leave ",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 8,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 8,
+                                    ),
                           ),
                         ),
                       ],
@@ -196,8 +229,6 @@ class CircularProgressIndicatorWidget extends StatelessWidget {
     );
   }
 }
-
-
 
 class CircularProgressPainter extends CustomPainter {
   final double percentage;

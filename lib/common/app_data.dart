@@ -1,7 +1,7 @@
 /// St. Mary's Higher Sec School
 
 // const String baseUrlName = 'http://stmarysapi.lumensof.in/api/';
-const String baseUrlName = 'https://stmarysapi.lumensof.in/api';
+const String baseUrlName = 'https://stmarysapi.lumensof.in/api/';
 const String appName = "ST.MARY'S HIGHER SECONDARY";
 const String appBundle = "com.irootsm";
 const String appIcon = "assets/images/logo.jpeg";

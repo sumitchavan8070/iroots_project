@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iroots/src/ui/dashboard/student/components/admin_card_list_wdget.dart';
 import 'package:iroots/src/ui/dashboard/student/components/custom_chart.dart';
-import 'package:iroots/src/ui/dashboard/student/components/getAttendanceStatus.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
 import 'package:iroots/src/ui/dashboard/student/components/percentage_chart.dart';
 
 class AdminDashboardView extends StatefulWidget {

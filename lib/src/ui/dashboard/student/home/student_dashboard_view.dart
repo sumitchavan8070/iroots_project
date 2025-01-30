@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iroots/src/ui/dashboard/student/components/academics_card.dart';
-import 'package:iroots/src/ui/dashboard/student/components/getAttendanceStatus.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
 import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
 
 class StudentDashboardView extends StatefulWidget {

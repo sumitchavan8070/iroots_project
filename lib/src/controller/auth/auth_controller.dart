@@ -100,7 +100,6 @@ class AuthController extends GetxController {
       // controllerEmail.text = "St.Mary";
       // controllerPassword.text = "St.Mary@123";
 
-
       // controllerEmail.text = "jisbyantony13@gmail.com";
       // controllerPassword.text = "pCyZPc8T";
 
@@ -133,7 +132,9 @@ class AuthController extends GetxController {
 
   register() {
     _registerUser(
-        name: controllerName.text, email: controllerEmail.text, password: controllerPassword.text);
+        name: controllerName.text,
+        email: controllerEmail.text,
+        password: controllerPassword.text);
   }
 
   login() {
@@ -172,11 +173,7 @@ class AuthController extends GetxController {
     required String name,
     required String email,
     required String password,
-  }) async {
-
-
-
-  }
+  }) async {}
 
   Future<void> _loginUser({
     required String email,
@@ -191,17 +188,16 @@ class AuthController extends GetxController {
 
     String jsonCredentials = jsonEncode(credentials);
 
-
+    const  url = "${baseUrlName}Auth/CreateEmployeeLogin";
     try {
       final response = await http.post(
-        Uri.parse("$baseUrlName/Auth/CreateEmployeeLogin"),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonCredentials,
       );
       debugPrint("response  --> ${response.statusCode} || ${response.body}");
-
 
       if (response.statusCode == 200) {
         var loginResponse = loginResponseFromJson(response.body);
