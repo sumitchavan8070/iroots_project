@@ -82,7 +82,7 @@ class StudentHomeController extends GetxController {
   void onItemTapped(int index) {
     switch (index) {
       case 0:
-        Get.to(() => const PaymentScreen());
+        Get.to(() =>  PaymentScreen());
         break;
       case 1:
         Get.to(() => const StudentAttendanceScreen(), arguments: studentData);
