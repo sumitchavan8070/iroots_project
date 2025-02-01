@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iroots/src/controller/attendance/student/student_attendance_controller.dart';
+import 'package:iroots/src/ui/dashboard/student/home/student_attendence_detail_view.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -10,6 +11,8 @@ class StudentAttendanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    return StudentAttendanceDetail();
     return GetBuilder(
       init: StudentAttendanceController(),
       builder: (logic) => DefaultTabController(

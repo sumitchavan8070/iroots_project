@@ -76,7 +76,7 @@ class _StudentAttendanceDetailState extends State<StudentAttendanceDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
-      appBar: AppBar(title: const Text("Student Attendance")),
+      appBar: AppBar(title: const Text("Attendance")),
       body: ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: attendanceData.length,

@@ -1,18 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:iroots/src/controller/home/student/student_home_controller.dart';
 import 'package:iroots/src/modal/dashboardModalClass.dart';
+import 'package:iroots/src/ui/dashboard/payment/payment_controller.dart';
+import 'package:iroots/src/ui/dashboard/student/components/academics_card.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
+import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
+import 'package:iroots/src/ui/dashboard/student/components/stuff_activity_card.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:iroots/src/controller/home/student/student_home_controller.dart';
-import 'package:iroots/src/ui/dashboard/student/components/academics_card.dart';
-import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
-import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
 
-class StudentHomePageScreen extends StatelessWidget {
+final _loadAttendeanceController = Get.put(LoadAttendenceDataController());
+
+class StudentHomePageScreen extends StatefulWidget {
   const StudentHomePageScreen({super.key});
+
+  @override
+  State<StudentHomePageScreen> createState() => _StudentHomePageScreenState();
+}
+
+class _StudentHomePageScreenState extends State<StudentHomePageScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadApi();
+  }
+
+  _loadApi() async {
+    final prefs = GetStorage();
+
+    final stdId = prefs.read("studentId");
+    final classId = prefs.read("class");
+    final sectionId = prefs.read("sectionId");
+
+    await _loadAttendeanceController.loadAttendece(
+        startDate: "2024-01-01",
+        endDate: "2024-12-30",
+        classId: classId,
+        sectionId: sectionId,
+        fromYear: 2024,
+        toYear: 2025,
+        studentId: stdId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +61,7 @@ class StudentHomePageScreen extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  todayAttendanceWidget(logic),
+                  // todayAttendanceWidget(logic),
                   const SizedBox(height: 30),
                   StudentDetailCard(
                     studentName: logic.studentData?.name ?? "",
@@ -45,118 +79,153 @@ class StudentHomePageScreen extends StatelessWidget {
                   ),
                   const AttendanceView(
                     attendanceData: {
-                      "present": [ "2025-01-02", "2025-01-03"],
+                      "present": ["2025-01-02", "2025-01-03"],
                       "absent": ["2025-01-13"],
                       "holidays": ["2025-01-04"],
                       "leaves": ["2025-01-07"]
                     },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        Row(
+                  // _buildCalendarMonth(logic),
+                  const SizedBox(height: 10),
+
+                  Obx(
+                    () {
+                      final summary =
+                          _loadAttendeanceController.yearlyAttendanceSummary;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              height: 43,
-                              width: 171,
-                              decoration: BoxDecoration(
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: const Color(0xFF0DB166)
-                                          .withOpacity(0.3)),
+                                    color: const Color(0xFF0DB166)
+                                        .withOpacity(0.3),
+                                  ),
                                   color:
                                       const Color(0xFF0DB166).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "Regional Holiday",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          color: const Color(0xFF0DB166),
-                                          fontWeight: FontWeight.w600),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        summary['totalPresent']?.toString() ??
+                                            '0',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFF0DB166),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Text(
+                                        "Present",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFF0DB166),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                            Container(
-                              height: 43,
-                              width: 171,
-                              decoration: BoxDecoration(
+                            const SizedBox(width: 20),
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: const Color(0xFF9F7CCB)
-                                          .withOpacity(0.3)),
+                                    color: const Color(0xFF9F7CCB)
+                                        .withOpacity(0.3),
+                                  ),
                                   color:
                                       const Color(0xFF9F7CCB).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "National Holiday",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          color: const Color(0xFF9F7CCB),
-                                          fontWeight: FontWeight.w600),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        summary['totalAbsent']?.toString() ??
+                                            '0',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFF9F7CCB),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Text(
+                                        "Absent",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFF9F7CCB),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 43,
-                              width: 171,
-                              decoration: BoxDecoration(
+                            const SizedBox(width: 20),
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: const Color(0xFFFF0000)
-                                          .withOpacity(0.3)),
+                                    color: const Color(0xFFFF0000)
+                                        .withOpacity(0.3),
+                                  ),
                                   color:
                                       const Color(0xFFFF0000).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "Reminders",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          color: const Color(0xFFFF0000),
-                                          fontWeight: FontWeight.w600),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              ),
-                            ),
-                            Container(
-                              height: 43,
-                              width: 171,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: const Color(0xFF1575FF)
-                                          .withOpacity(0.3)),
-                                  color:
-                                      const Color(0xFF1575FF).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Center(
-                                child: Text(
-                                  "My Leaves",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          color: const Color(0xFF1575FF),
-                                          fontWeight: FontWeight.w600),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        summary['totalLeave']?.toString() ??
+                                            '0',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFFFF0000),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Text(
+                                        "Leave",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: const Color(0xFFFF0000),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
+                  const SizedBox(height: 60),
                 ],
               ),
             ),

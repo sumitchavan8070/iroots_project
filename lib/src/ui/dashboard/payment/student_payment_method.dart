@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:iroots/src/controller/payment/student/payment_method_controller.dart';
+import 'package:iroots/src/ui/dashboard/payment/payment_controller.dart';
 import 'package:iroots/src/ui/dashboard/payment/student_payment_confirm.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 
 enum PaymentRadio { phonepe, googlePay, upi }
 
+final _makePaymentController = Get.put(MakePaymentController());
+
 class PaymentMethodScreen extends StatelessWidget {
-  const PaymentMethodScreen({super.key});
+  final String amount;
+  final String heading;
+
+  const PaymentMethodScreen(
+      {super.key, required this.amount, required this.heading});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
         init: PaymentMethodController(),
         builder: (logic) => DefaultTabController(
-            length: 3,
+            length: 1,
             child: Scaffold(
               appBar: AppBar(
                 elevation: 0,
@@ -57,7 +63,7 @@ class PaymentMethodScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w700,
                                       fontSize: 14)),
                               AppUtil.customText(
-                                  text: "₹4000",
+                                  text: "₹$amount",
                                   style: const TextStyle(
                                       color: Color(0xff1575FF),
                                       fontFamily: 'Open Sans',
@@ -82,12 +88,14 @@ class PaymentMethodScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontSize: 10),
                           tabs: [
-                            tabWidget("Credit/Debit Card",
-                                "assets/icons/payment/icon_credit_card.svg"),
-                            tabWidget("Bank Transfer",
-                                "assets/icons/payment/icon_bank.svg"),
-                            tabWidget("UPI",
-                                "assets/icons/payment/icon_credit_card.svg"),
+                            tabWidget(
+                              "Credit/Debit Card",
+                              "assets/icons/credit-card.png",
+                            ),
+                            // tabWidget("Bank Transfer",
+                            //     "assets/icons/payment/icon_bank.svg"),
+                            // tabWidget("UPI",
+                            //     "assets/icons/payment/icon_credit_card.svg"),
                           ],
                         ),
                       ],
@@ -100,8 +108,9 @@ class PaymentMethodScreen extends StatelessWidget {
                 controller: logic.tabController,
                 children: [
                   tabBarWidgetOne(logic),
-                  tabBarWidgetTwo(logic),
-                  tabBarWidgetThree(logic),
+                  // tabBarWidgetTwo(logic),
+                  // TabBarWidgetTwo(),
+                  // tabBarWidgetThree(logic),
                 ],
               ),
               bottomNavigationBar: Container(
@@ -130,12 +139,15 @@ class PaymentMethodScreen extends StatelessWidget {
                                   fontFamily: 'Open Sans',
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14),
-                            )),
-                        () {
+                            )), () {
+                      _makePaymentController.makePayment(
+                        amt: amount,
+                        heading: heading,
+                      );
+                      return;
 
-                          Get.to(() => const PaymentConfirmationScreen());
-
-                        }),
+                      Get.to(() => const PaymentConfirmationScreen());
+                    }),
                   ),
                 ),
               ),
@@ -148,66 +160,78 @@ class PaymentMethodScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppUtil.customText(
-            text: "Card Details",
-            style: const TextStyle(
-                fontFamily: 'Open Sans',
-                fontWeight: FontWeight.w700,
-                fontSize: 12),
+          const Text(
+            "Card Details",
+            style: TextStyle(
+              fontFamily: 'Open Sans',
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            ),
           ),
-          const SizedBox(
-            height: 10,
+          const SizedBox(height: 10),
+          textFieldWidget(
+            prefixIcon: const Icon(Icons.person),
+            controller: logic.controllerCardHolderName,
+            hint: "Enter card holder name",
+            maxLength: 50,
+            keyboardType: TextInputType.text,
           ),
-          widgetTextField(
-              prefixIcon: const Icon(Icons.email),
-              controllerEmail: logic.controllerCarHolderName,
-              hint: "Enter card holder name",
-              maxLength: 50,
-              keyboardType: TextInputType.emailAddress),
-          const SizedBox(
-            height: 10,
+          const SizedBox(height: 10),
+          textFieldWidget(
+            prefixIcon: const Icon(Icons.credit_card),
+            controller: logic.controllerCardNumber,
+            hint: "Card Number",
+            maxLength: 16,
+            keyboardType: TextInputType.number,
           ),
-          widgetTextField(
-              prefixIcon: const Icon(Icons.email),
-              controllerEmail: logic.controllerCarHolderName,
-              hint: "Card Number",
-              maxLength: 12,
-              keyboardType: TextInputType.number),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: SizedBox(
-                  width: 0.5,
-                  child: widgetTextField(
-                      prefixIcon: const Icon(Icons.email),
-                      controllerEmail: logic.controllerCarHolderName,
-                      hint: "Expiry Date",
-                      maxLength: 50,
-                      keyboardType: TextInputType.emailAddress),
+                child: textFieldWidget(
+                  prefixIcon: const Icon(Icons.calendar_today),
+                  controller: logic.controllerExpiryDate,
+                  hint: "Expiry Date (MM/YY)",
+                  maxLength: 5,
+                  keyboardType: TextInputType.datetime,
                 ),
               ),
-              const SizedBox(
-                width: 20,
-              ),
+              const SizedBox(width: 20),
               Expanded(
-                child: SizedBox(
-                  width: 0.25,
-                  child: widgetTextField(
-                      prefixIcon: const Icon(Icons.email),
-                      controllerEmail: logic.controllerCarHolderName,
-                      hint: "CVV",
-                      maxLength: 3,
-                      keyboardType: TextInputType.number),
+                child: textFieldWidget(
+                  prefixIcon: const Icon(Icons.lock),
+                  controller: logic.controllerCVV,
+                  hint: "CVV",
+                  maxLength: 3,
+                  keyboardType: TextInputType.number,
                 ),
               ),
             ],
-          )
+          ),
+          const SizedBox(height: 20),
         ],
       ),
+    );
+  }
+
+  Widget textFieldWidget({
+    required Icon prefixIcon,
+    required TextEditingController controller,
+    required String hint,
+    required int maxLength,
+    required TextInputType keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: prefixIcon,
+        hintText: hint,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      maxLength: maxLength,
+      keyboardType: keyboardType,
     );
   }
 
@@ -285,11 +309,7 @@ class PaymentMethodScreen extends StatelessWidget {
             width: 0.9,
           ),
         ),
-        child: SvgPicture.asset(
-          icon,
-          width: 15,
-          height: 15,
-        ),
+        child: Image.asset(icon, width: 15, height: 15),
       ),
     );
   }
@@ -376,146 +396,146 @@ class PaymentMethodScreen extends StatelessWidget {
     );
   }
 
-  Widget tabBarWidgetTwo(PaymentMethodController logic) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppUtil.customText(
-              text: "Transfer Mode",
-              style: const TextStyle(
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                transferModeTextWidget("NEFT", ConstClass.selectedColor),
-                const SizedBox(
-                  width: 20,
-                ),
-                transferModeTextWidget("RTGS", Colors.grey),
-                const SizedBox(
-                  width: 20,
-                ),
-                transferModeTextWidget("IMPS", Colors.grey),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Note : NEFT transfer money within 1 Hour",
-              style: const TextStyle(
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Account Number",
-              style: const TextStyle(
-                  color: Color(0xff475569),
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            widgetTextField1(
-                controllerEmail: logic.controllerCarHolderName,
-                hint: "Enter account number",
-                maxLength: 50,
-                keyboardType: TextInputType.emailAddress),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Name",
-              style: const TextStyle(
-                  color: Color(0xff475569),
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            widgetTextField1(
-                controllerEmail: logic.controllerCarHolderName,
-                hint: "Enter name",
-                maxLength: 50,
-                keyboardType: TextInputType.emailAddress),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Branch Name",
-              style: const TextStyle(
-                  color: Color(0xff475569),
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            widgetTextField1(
-                controllerEmail: logic.controllerCarHolderName,
-                hint: "Enter branch name",
-                maxLength: 50,
-                keyboardType: TextInputType.emailAddress),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Remarks (Optional)",
-              style: const TextStyle(
-                  color: Color(0xff475569),
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            widgetTextField1(
-                controllerEmail: logic.controllerCarHolderName,
-                hint: "Enter remarks",
-                maxLength: 50,
-                keyboardType: TextInputType.emailAddress),
-            const SizedBox(
-              height: 10,
-            ),
-            AppUtil.customText(
-              text: "Amount",
-              style: const TextStyle(
-                  color: Color(0xff475569),
-                  fontFamily: 'Open Sans',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            widgetTextField1(
-                controllerEmail: logic.controllerCarHolderName,
-                hint: "Enter amount",
-                maxLength: 50,
-                keyboardType: TextInputType.emailAddress),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget tabBarWidgetTwo(PaymentMethodController logic) {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(10.0),
+  //     child: SingleChildScrollView(
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           AppUtil.customText(
+  //             text: "Transfer Mode",
+  //             style: const TextStyle(
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           Row(
+  //             children: [
+  //               transferModeTextWidget("NEFT", ConstClass.selectedColor),
+  //               const SizedBox(
+  //                 width: 20,
+  //               ),
+  //               transferModeTextWidget("RTGS", Colors.grey),
+  //               const SizedBox(
+  //                 width: 20,
+  //               ),
+  //               transferModeTextWidget("IMPS", Colors.grey),
+  //             ],
+  //           ),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Note : NEFT transfer money within 1 Hour",
+  //             style: const TextStyle(
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w400,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Account Number",
+  //             style: const TextStyle(
+  //                 color: Color(0xff475569),
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //           widgetTextField1(
+  //               controllerEmail: logic.controllerCarHolderName,
+  //               hint: "Enter account number",
+  //               maxLength: 50,
+  //               keyboardType: TextInputType.emailAddress),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Name",
+  //             style: const TextStyle(
+  //                 color: Color(0xff475569),
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //           widgetTextField1(
+  //               controllerEmail: logic.controllerCarHolderName,
+  //               hint: "Enter name",
+  //               maxLength: 50,
+  //               keyboardType: TextInputType.emailAddress),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Branch Name",
+  //             style: const TextStyle(
+  //                 color: Color(0xff475569),
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //           widgetTextField1(
+  //               controllerEmail: logic.controllerCarHolderName,
+  //               hint: "Enter branch name",
+  //               maxLength: 50,
+  //               keyboardType: TextInputType.emailAddress),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Remarks (Optional)",
+  //             style: const TextStyle(
+  //                 color: Color(0xff475569),
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //           widgetTextField1(
+  //               controllerEmail: logic.controllerCarHolderName,
+  //               hint: "Enter remarks",
+  //               maxLength: 50,
+  //               keyboardType: TextInputType.emailAddress),
+  //           const SizedBox(
+  //             height: 10,
+  //           ),
+  //           AppUtil.customText(
+  //             text: "Amount",
+  //             style: const TextStyle(
+  //                 color: Color(0xff475569),
+  //                 fontFamily: 'Open Sans',
+  //                 fontWeight: FontWeight.w700,
+  //                 fontSize: 12),
+  //           ),
+  //           const SizedBox(
+  //             height: 5,
+  //           ),
+  //           widgetTextField1(
+  //               controllerEmail: logic.controllerCarHolderName,
+  //               hint: "Enter amount",
+  //               maxLength: 50,
+  //               keyboardType: TextInputType.emailAddress),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget transferModeTextWidget(String title, Color selectedColor) {
     return Container(
@@ -530,15 +550,12 @@ class PaymentMethodScreen extends StatelessWidget {
       child: AppUtil.customText(
         text: title,
         style: const TextStyle(
-            fontFamily: 'Open Sans',
-            fontWeight: FontWeight.w700,
-            fontSize: 10),
+            fontFamily: 'Open Sans', fontWeight: FontWeight.w700, fontSize: 10),
       ),
     );
   }
 
   Widget tabBarWidgetThree(PaymentMethodController logic) {
-
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -565,17 +582,11 @@ class PaymentMethodScreen extends StatelessWidget {
             child: Column(
               children: [
                 radioWidget("assets/icons/payment/img_phonepe.png", "Phone Pe",
-                    PaymentRadio.phonepe, (newValue) {
-
-                }),
-                radioWidget("assets/icons/payment/img_google_pay.png", "Google Pay",
-                    PaymentRadio.googlePay, (newValue) {
-
-                    }),
+                    PaymentRadio.phonepe, (newValue) {}),
+                radioWidget("assets/icons/payment/img_google_pay.png",
+                    "Google Pay", PaymentRadio.googlePay, (newValue) {}),
                 radioWidget("assets/icons/payment/img_upi.png", "UPI ID",
-                    PaymentRadio.googlePay, (newValue) {
-
-                    }),
+                    PaymentRadio.googlePay, (newValue) {}),
               ],
             ),
           )
@@ -587,7 +598,6 @@ class PaymentMethodScreen extends StatelessWidget {
   Widget radioWidget(String radioIcon, String radioTitle,
       PaymentRadio currentRadio, Null Function(dynamic newValue) radioChanged) {
     return ListTile(
-
       title: Row(
         children: [
           Image.asset(

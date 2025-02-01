@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iroots/src/ui/dashboard/student/components/admin_card_list_wdget.dart';
-import 'package:iroots/src/ui/dashboard/student/components/custom_chart.dart';
 import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
+import 'package:iroots/src/ui/dashboard/student/components/custom_chart.dart';
 import 'package:iroots/src/ui/dashboard/student/components/percentage_chart.dart';
+import 'package:iroots/src/ui/dashboard/student/components/stuff_activity_card.dart';
 
 class AdminDashboardView extends StatefulWidget {
   const AdminDashboardView({super.key});
@@ -145,6 +146,14 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                 "holidays": ["2025-01-17"]
               },
             ),
+            const StuffActivityCard(
+              studentName: "",
+              date: "N/A",
+              classId: "N/A",
+              rollNumber: "N/A",
+              userImage: "",
+            ),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(

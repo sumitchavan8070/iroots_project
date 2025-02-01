@@ -131,6 +131,15 @@ class StudentHomeController extends GetxController {
         if (loginResponse.responseCode == "200" &&
             loginResponse.data.isNotEmpty) {
           studentData = loginResponse.data[0]!.student;
+
+          //   iam updating this data coz i need in payment this vars
+          box.write("applicationNumber", studentData?.applicationNumber ?? "-");
+          box.write("studentId", studentData?.studentId ?? "-");
+          box.write("class", studentData?.classId ?? "-");
+          box.write("email", studentData?.parentEmail ?? "-");
+          box.write("sectionId", studentData?.sectionId ?? "-");
+
+
           _sendDeviceToken(loginResponse.data[0]!.student.studentId);
           _getStudentAttendance();
         } else if (loginResponse.responseCode == "500") {

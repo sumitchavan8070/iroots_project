@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:iroots/src/controller/home/student/get_student_fees_details_controller.dart';
 import 'package:iroots/src/controller/payment/student/payment_controller.dart';
+import 'package:iroots/src/modal/home/student/studentDetails.dart';
 import 'package:iroots/src/ui/dashboard/payment/student_payment_method.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 
-
 final _controller = Get.put(GetFeesDetailsController());
 
 class PaymentScreen extends StatefulWidget {
-  PaymentScreen({super.key});
+  const PaymentScreen({super.key});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -22,202 +23,147 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // TODO: implement initState
     super.initState();
     _loadApi();
-
-
   }
 
-  _loadApi ()async{
-     const  tempNumber = "20242207104403";
-     await  _controller.getFeesDetails(tempNumber);
+  _loadApi() async {
+    final prefs = GetStorage();
+    final applicationNumber = prefs.read("applicationNumber");
+    debugPrint("application number in student data $applicationNumber");
+
+    await _controller.getFeesDetails(applicationNumber.toString() ?? "");
   }
 
-  final List<Map<String, dynamic>> feeDetails = [
-    {
-      "feeName": "Re-Admission",
-      "feeValue": 4000,
-      "paidAmount": 0,
-      "balance": 4000
-    },
-    {
-      "feeName": "January Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "February Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "March Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "April Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "May Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "June Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "July Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "August Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "September Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "October Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "November Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-    {
-      "feeName": "December Month School Fee",
-      "feeValue": 900,
-      "paidAmount": 0,
-      "balance": 900
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
-
-
-    return
-      Scaffold(
-        appBar: AppBar(
-          title: const Text("Fee Details"),
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
-        ),
-        body: _controller.obx((state) {
-          return
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  ListView.builder(
-                    itemCount: feeDetails.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      final fee = feeDetails[index];
-                      return Container(
-                        margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Fee name and balance
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(fee["feeName"],
-                                    style: Theme.of(context).textTheme.bodySmall),
-                                const SizedBox(height: 8),
-                                Text("Balance: ₹${fee["balance"]}"),
-                              ],
-                            ),
-                            // Pay Now button
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                // Handle the "Pay Now" button action
-                                print("Pay Now for ${fee["feeName"]}");
-                              },
-                              label: const Row(
-                                children: [
-                                  Text("Pay Now"),
-                                ],
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Fee Details"),
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: _controller.obx(
+        (state) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                ListView.builder(
+                  itemCount: state?.feeDetails?.length ?? 0,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final item = state?.feeDetails?[index];
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 0),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Fee name and balance
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item?.feeName ?? "N/A",
+                                  style: Theme.of(context).textTheme.bodySmall),
+                              const SizedBox(height: 8),
+                              RichText(
+                                text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: 'Need to Pay : ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: Colors
+                                                  .red, // Or any color you want
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                    TextSpan(
+                                        text: '₹${item?.feeValue}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: Colors
+                                                  .red, // Or any color you want
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                  ],
                                 ),
+                              )
+                            ],
+                          ),
+                          // Pay Now button
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Get.to(() => const PaymentMethodScreen());
+                              Get.to(() => PaymentMethodScreen(
+                                  amount: item?.feeValue.toString() ?? "",
+                                heading: item?.feeName ?? "",
+                              ));
+
+                              // Handle the "Pay Now" button action
+                              // print("Pay Now for ${fee["feeName"]}");
+                            },
+                            label: const Row(
+                              children: [Text("Pay Now")],
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  // Total Amount and Floating Action Button
-                ],
-              ),
-            );
-
-
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                // Total Amount and Floating Action Button
+              ],
+            ),
+          );
         },
-          onLoading: const Center(child: CircularProgressIndicator()),
-          onError: (error) {
-            return const Center(child: Text("Something went wrong try again later "),);
-
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        // floatingActionButton: ElevatedButton(
-        //   onPressed: () {},
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: Colors.blueAccent, // Blue button
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(50), // Border radius 50
-        //     ),
-        //     padding: const EdgeInsets.symmetric(
-        //         horizontal: 20, vertical: 12), // Adjust padding
-        //   ),
-        //   child: Text(
-        //     "Make Full Payment  ₹${totalAmount.toStringAsFixed(2)}",
-        //     style: const TextStyle(
-        //         color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
-      );
-
+        onLoading: const Center(child: CircularProgressIndicator()),
+        onError: (error) {
+          return const Center(
+            child: Text("Something went wrong try again later "),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      // floatingActionButton: ElevatedButton(
+      //   onPressed: () {},
+      //   style: ElevatedButton.styleFrom(
+      //     backgroundColor: Colors.blueAccent, // Blue button
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(50), // Border radius 50
+      //     ),
+      //     padding: const EdgeInsets.symmetric(
+      //         horizontal: 20, vertical: 12), // Adjust padding
+      //   ),
+      //   child: Text(
+      //     "Make Full Payment  ₹${totalAmount.toStringAsFixed(2)}",
+      //     style: const TextStyle(
+      //         color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+      //   ),
+      // ),
+    );
 
     return GetBuilder(
         init: PaymentController(),
@@ -294,7 +240,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14),
                             )), () {
-                      Get.to(() => const PaymentMethodScreen());
+                      // Get.to(() => const PaymentMethodScreen());
                     }),
                   ),
                 ),

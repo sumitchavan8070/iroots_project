@@ -349,7 +349,7 @@ class _DashBoardPageScreenState extends State<DashBoardPageScreen> {
           },
           children: [
             logic.userRole == "Student"
-                ? const StudentHomePageScreen()
+                ?  StudentHomePageScreen()
                 : logic.userRole == "Administrator"
                     ? const AdminHomePageScreen()
                     : const StaffHomePageScreen(),

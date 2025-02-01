@@ -24,7 +24,7 @@ class _StudentDashboardViewState extends State<StudentDashboardView> {
             const SizedBox(height: 40),
             const StudentDetailCard(),
             const SizedBox(height: 18),
-            // const AcademicsCard(),
+            // const AcademicsCard(onPressed: (int ) {  },),
             const AttendanceView(
               attendanceData: {
                 "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
