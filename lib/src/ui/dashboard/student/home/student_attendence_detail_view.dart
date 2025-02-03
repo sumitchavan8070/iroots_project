@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:iroots/src/ui/dashboard/payment/LoadAttendenceDataController.dart';
+import 'package:iroots/src/ui/dashboard/payment/payment_controller.dart';
+
+final _loadAttendeanceController = Get.put(LoadAttendenceDataController());
 
 class StudentAttendanceDetail extends StatefulWidget {
   const StudentAttendanceDetail({super.key});
 
   @override
-  State<StudentAttendanceDetail> createState() => _StudentAttendanceDetailState();
+  State<StudentAttendanceDetail> createState() =>
+      _StudentAttendanceDetailState();
 }
 
 class _StudentAttendanceDetailState extends State<StudentAttendanceDetail> {
@@ -70,6 +77,48 @@ class _StudentAttendanceDetailState extends State<StudentAttendanceDetail> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  // https://stmarysapi.lumensof.in/api/Dashboard/StudentsDashBoardAttendanceDetails?startDate=2024-01-01&endDate=2024-12-30&classId=197&sectionId=23&fromYear=2024&toYear=2025&studentId=869
+  _loadApi()async {
+    final prefs = GetStorage();
+
+    final stdId = prefs.read("studentId");
+    final classId = prefs.read("class");
+    final sectionId = prefs.read("sectionId");
+
+    String _buildUrl({
+      required String startDate,
+      required String endDate,
+      required String classId,
+      required String sectionId,
+      required String fromYear,
+      required String toYear,
+      required String studentId,
+    }) {
+      // Construct the URL dynamically using the provided parameters
+      final url =
+          'https://stmarysapi.lumensof.in/api/Dashboard/StudentsDashBoardAttendanceDetails?'
+          'startDate=$startDate&'
+          'endDate=$endDate&'
+          'classId=$classId&'
+          'sectionId=$sectionId&'
+          'fromYear=$fromYear&'
+          'toYear=$toYear&'
+          'studentId=$studentId';
+
+      return url;
+    }
+
+
+
+
   }
 
   @override

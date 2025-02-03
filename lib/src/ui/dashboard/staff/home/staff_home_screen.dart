@@ -4,12 +4,42 @@ import 'package:get/get.dart';
 import 'package:iroots/src/controller/home/staff/staff_home_controller.dart';
 import 'package:iroots/src/modal/dashboardModalClass.dart';
 import 'package:iroots/src/ui/dashboard/home/staff/academics_home_screen.dart';
+import 'package:iroots/src/ui/dashboard/payment/LoadAttendenceDataController.dart';
+import 'package:iroots/src/ui/dashboard/student/components/academics_card.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
+import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
+import 'package:iroots/src/ui/dashboard/student/components/stuff_activity_card.dart';
 import 'package:iroots/src/utility/const.dart';
+import 'package:iroots/src/utility/constant/asset_path.dart';
 import 'package:iroots/src/utility/util.dart';
+import 'package:lottie/lottie.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class StaffHomePageScreen extends StatelessWidget {
+final _loadAttendeanceController = Get.put(LoadAttendenceDataController());
+
+class StaffHomePageScreen extends StatefulWidget {
   const StaffHomePageScreen({super.key});
+
+  @override
+  State<StaffHomePageScreen> createState() => _StaffHomePageScreenState();
+}
+
+class _StaffHomePageScreenState extends State<StaffHomePageScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadApi();
+  }
+
+  _loadApi() async {
+    await _loadAttendeanceController.loadAttendece(
+      startDate: "2024-01-01",
+      endDate: "2024-12-30",
+      fromYear: "2024",
+      toYear: "2025",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,160 +53,206 @@ class StaffHomePageScreen extends StatelessWidget {
             child: Container(
               color: const Color(0xffF1F5F9),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    todayAttendanceWidget(logic),
-                    const SizedBox(height: 5),
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AppUtil.customText(
-                            text: "Academics",
-                            style: const TextStyle(
-                              fontFamily: 'Open Sans',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(() => const AcademicsFullScreen());
-                            },
-                            child: AppUtil.customText(
-                              text: "View All",
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: ConstClass.themeColor,
-                                fontFamily: 'Open Sans',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-                      child: GridView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: logic.staffAcademicList.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                              onTap: () {
-                                logic.onItemTapped(index);
-                              },
-                              child: buildAcademicWidget(
-                                  logic.staffAcademicList[index]));
-                        },
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 5 / 5,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5,
-                        ),
-                      ),
-                    ),
-                    _buildCalendarMonth(logic),
-                    Card(
-                      margin:
-                          const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppUtil.customText(
-                              text: "Staff Activity",
-                              style: const TextStyle(
-                                color: Color(0xff334155),
-                                fontFamily: 'Open Sans',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                AppUtil.customText(
-                                  text: "Student Attendance",
-                                  style: const TextStyle(
-                                    color: Color(0xff64748B),
-                                    fontFamily: 'Open Sans',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
-                                  decoration: ShapeDecoration(
-                                    color: const Color(0xFFF1F5F9),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(4)),
-                                  ),
-                                  child: AppUtil.customText(
-                                    text: "2023-2024",
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: ConstClass.themeColor,
-                                      fontFamily: 'Open Sans',
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // todayAttendanceWidget(logic),
+                  const SizedBox(height: 20),
 
-                            /*  PieChart(
-                              dataMap: logic.graphData,
-                              animationDuration:
-                                  const Duration(milliseconds: 800),
-                              chartLegendSpacing: 50,
-                              colorList: logic.colorList,
-                              initialAngleInDegree: 0,
-                              chartType: ChartType.ring,
-                              ringStrokeWidth: 35,
-                              legendOptions: LegendOptions(
-                                showLegendsInRow: false,
-                                legendPosition: LegendPosition.right,
-                                showLegends: true,
-                                legendShape: BoxShape.rectangle,
-                                legendTextStyle: TextStyle(
-                                    color: const Color(0xff64748B),
-                                    fontFamily: 'Open Sans',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 10.sp),
-                              ),
-                              chartValuesOptions: const ChartValuesOptions(
-                                showChartValueBackground: false,
-                                showChartValues: false,
-                                showChartValuesOutside: false,
-                                decimalPlaces: 0,
-                              ),
-                            ),*/
-                            const SizedBox(
-                              height: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ]),
+                  StudentDetailCard(
+                    studentName: logic.staffDetail.value.name ?? "",
+                    date: logic.currentDate ?? "N/A",
+                    classId: logic.staffDetail.value.email ?? "N/A",
+                    // percentage: logic.studentData.,
+                    rollNumber: "",
+                    userImage: logic.staffDetail.value.avatar ?? "N/A",
+                  ),
+                  const SizedBox(height: 5),
+                  const SizedBox(height: 18),
+                  AcademicsCard(
+                    image1: AssetPath.fillMarks,
+                    image2: AssetPath.fillAttendance,
+                    image3: AssetPath.fillCoScholastic,
+                    image4: AssetPath.homeworkStaff,
+                    image5: AssetPath.payroll,
+                    image6: AssetPath.timeTableStaff,
+                    icon1: "Fill Marks",
+                    icon2: "Fill Attendance",
+                    icon3: "Fill Co-Scholastic",
+                    icon4: "Homework",
+                    icon5: "Payroll",
+                    icon6: "Time Table",
+                    onPressed: (i) {
+                      logic.onItemTapped(i);
+                    },
+                  ),
+                  // Padding(
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       AppUtil.customText(
+                  //         text: "Academics",
+                  //         style: const TextStyle(
+                  //           fontFamily: 'Open Sans',
+                  //           fontWeight: FontWeight.w700,
+                  //           fontSize: 14,
+                  //         ),
+                  //       ),
+                  //       GestureDetector(
+                  //         onTap: () {
+                  //           Get.to(() => const AcademicsFullScreen());
+                  //         },
+                  //         child: AppUtil.customText(
+                  //           text: "View All",
+                  //           style: TextStyle(
+                  //             decoration: TextDecoration.underline,
+                  //             color: ConstClass.themeColor,
+                  //             fontFamily: 'Open Sans',
+                  //             fontWeight: FontWeight.w600,
+                  //             fontSize: 12,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  const SizedBox(height: 5),
+                  // Padding(
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                  //   child: GridView.builder(
+                  //     physics: const NeverScrollableScrollPhysics(),
+                  //     shrinkWrap: true,
+                  //     itemCount: logic.staffAcademicList.length,
+                  //     itemBuilder: (context, index) {
+                  //       return InkWell(
+                  //           onTap: () {
+                  //             logic.onItemTapped(index);
+                  //           },
+                  //           child: buildAcademicWidget(
+                  //               logic.staffAcademicList[index]));
+                  //     },
+                  //     gridDelegate:
+                  //         const SliverGridDelegateWithFixedCrossAxisCount(
+                  //       crossAxisCount: 3,
+                  //       childAspectRatio: 5 / 5,
+                  //       crossAxisSpacing: 5,
+                  //       mainAxisSpacing: 5,
+                  //     ),
+                  //   ),
+                  // ),
+                  _loadAttendeanceController.obx(
+                    (state) {
+                      final attendanceData = state?.data?.dateRangeAttendance;
+                      return AttendanceView(
+                        attendanceData: attendanceData,
+                      );
+                    },
+                    onEmpty: Lottie.asset(AssetPath.noDataFound),
+                    onError: (error) {
+                      return Lottie.asset(AssetPath.noDataFound);
+                    },
+                    onLoading: const CircularProgressIndicator(),
+                  ),
+                  // _buildCalendarMonth(logic),
+                  SizedBox(height: 20)
+                  ,
+                  StuffActivityCard(),
+                  SizedBox(height: 20)
+                  // Card(
+                  //   margin:
+                  //       const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  //   elevation: 2,
+                  //   shape: RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.circular(8.0),
+                  //   ),
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(15.0),
+                  //     child: Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         AppUtil.customText(
+                  //           text: "Staff Activity",
+                  //           style: const TextStyle(
+                  //             color: Color(0xff334155),
+                  //             fontFamily: 'Open Sans',
+                  //             fontWeight: FontWeight.w700,
+                  //             fontSize: 20,
+                  //           ),
+                  //         ),
+                  //         const SizedBox(height: 5),
+                  //         Row(
+                  //           children: [
+                  //             AppUtil.customText(
+                  //               text: "Student Attendance",
+                  //               style: const TextStyle(
+                  //                 color: Color(0xff64748B),
+                  //                 fontFamily: 'Open Sans',
+                  //                 fontWeight: FontWeight.w700,
+                  //                 fontSize: 12,
+                  //               ),
+                  //             ),
+                  //             const SizedBox(width: 10),
+                  //             Container(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                   horizontal: 6, vertical: 2),
+                  //               decoration: ShapeDecoration(
+                  //                 color: const Color(0xFFF1F5F9),
+                  //                 shape: RoundedRectangleBorder(
+                  //                     borderRadius: BorderRadius.circular(4)),
+                  //               ),
+                  //               child: AppUtil.customText(
+                  //                 text: "2023-2024",
+                  //                 style: TextStyle(
+                  //                   decoration: TextDecoration.underline,
+                  //                   color: ConstClass.themeColor,
+                  //                   fontFamily: 'Open Sans',
+                  //                   fontWeight: FontWeight.w700,
+                  //                   fontSize: 10,
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //         const SizedBox(height: 20),
+                  //
+                  //         /*  PieChart(
+                  //           dataMap: logic.graphData,
+                  //           animationDuration:
+                  //               const Duration(milliseconds: 800),
+                  //           chartLegendSpacing: 50,
+                  //           colorList: logic.colorList,
+                  //           initialAngleInDegree: 0,
+                  //           chartType: ChartType.ring,
+                  //           ringStrokeWidth: 35,
+                  //           legendOptions: LegendOptions(
+                  //             showLegendsInRow: false,
+                  //             legendPosition: LegendPosition.right,
+                  //             showLegends: true,
+                  //             legendShape: BoxShape.rectangle,
+                  //             legendTextStyle: TextStyle(
+                  //                 color: const Color(0xff64748B),
+                  //                 fontFamily: 'Open Sans',
+                  //                 fontWeight: FontWeight.w700,
+                  //                 fontSize: 10.sp),
+                  //           ),
+                  //           chartValuesOptions: const ChartValuesOptions(
+                  //             showChartValueBackground: false,
+                  //             showChartValues: false,
+                  //             showChartValuesOutside: false,
+                  //             decimalPlaces: 0,
+                  //           ),
+                  //         ),*/
+                  //         const SizedBox(
+                  //           height: 10,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // )
+                ],
+              ),
             ),
           );
         }

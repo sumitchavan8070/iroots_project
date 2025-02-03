@@ -110,6 +110,7 @@ class _AdminCardListWidgetState extends State<AdminCardListWidget> {
                         ? Colors.blueGrey
                         : Colors.grey.withOpacity(0.3),
                     boxShadow: [], // No shadow since showShadow was false
+                    borderRadius: BorderRadius.circular(12)
                   ),
 
                   // AppBoxDecoration.getBoxDecoration(

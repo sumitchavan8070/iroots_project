@@ -82,8 +82,10 @@ class AuthController extends GetxController {
       // controllerPassword.text = "Mu7WiGuj";
       //
 
-      // controllerEmail.text = "luiesangmaa@gmail.com";
-      // controllerPassword.text = "s5Tm8P2s";
+      controllerEmail.text = "luiesangmaa@gmail.com";
+      controllerPassword.text = "s5Tm8P2s";
+
+
 
       // controllerEmail.text = "sangmaemeritha@gmail.com";
       // controllerPassword.text = "FDqgRHQN";
@@ -105,6 +107,27 @@ class AuthController extends GetxController {
 
       controllerEmail.text = "RikechiWenaraNMarak";
       controllerPassword.text = "2ZwNy2jl";
+
+
+
+      controllerEmail.text = "AMOGHTRIPATHI";
+      controllerPassword.text = "WrRounr1";
+
+
+      // controllerEmail.text = "ViewBag.Email";
+      // controllerPassword.text = "ViewBag.mob";
+
+
+
+      // controllerEmail.text = "nirmalaconvent";
+      // controllerPassword.text = "nirmala@123";
+
+
+
+      // controllerEmail.text = "hemantsisodiya75@gmail.com";
+      // controllerPassword.text = "Rajababu@123";
+
+
     }
 
     super.onInit();

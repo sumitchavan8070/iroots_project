@@ -3,24 +3,25 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:iroots/src/controller/home/student/get_student_fees_details_controller.dart';
 import 'package:iroots/src/controller/payment/student/payment_controller.dart';
-import 'package:iroots/src/modal/home/student/studentDetails.dart';
 import 'package:iroots/src/ui/dashboard/payment/student_payment_method.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 
 final _controller = Get.put(GetFeesDetailsController());
 
-class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key});
+class FeeDetailsView extends StatefulWidget {
+  const FeeDetailsView({super.key});
 
   @override
-  State<PaymentScreen> createState() => _PaymentScreenState();
+  State<FeeDetailsView> createState() => _FeeDetailsViewState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _FeeDetailsViewState extends State<FeeDetailsView> {
+  final Map<int, bool> _selectedItems = {}; // To track selected items
+  double totalAmount = 0.0; // To store the total amount of selected fees
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadApi();
   }
@@ -33,14 +34,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
     await _controller.getFeesDetails(applicationNumber.toString() ?? "");
   }
 
+  // Function to update the total amount based on selected items
+  void _updateTotalAmount() {
+    totalAmount = 0.0;
+    _selectedItems.forEach((index, isSelected) {
+      if (isSelected) {
+        final item = _controller.state?.feeDetails?[index];
+        totalAmount += item?.feeValue ?? 0.0;
+      }
+    });
+    setState(() {}); // Update the UI
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5FCFF),
       appBar: AppBar(
         title: const Text("Fee Details"),
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
+        backgroundColor: const Color(0xFFF5FCFF),
       ),
       body: _controller.obx(
         (state) {
@@ -54,9 +66,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     final item = state?.feeDetails?[index];
+
                     return Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 12),
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -84,22 +96,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   children: <TextSpan>[
                                     TextSpan(
                                         text: 'Need to Pay : ',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: Colors
-                                                  .red, // Or any color you want
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              color: Colors.red,
                                               fontWeight: FontWeight.bold,
                                             )),
                                     TextSpan(
                                         text: '₹${item?.feeValue}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: Colors
-                                                  .red, // Or any color you want
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              color: Colors.red,
                                               fontWeight: FontWeight.bold,
                                             )),
                                   ],
@@ -107,26 +111,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               )
                             ],
                           ),
-                          // Pay Now button
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              // Get.to(() => const PaymentMethodScreen());
-                              Get.to(() => PaymentMethodScreen(
-                                  amount: item?.feeValue.toString() ?? "",
-                                heading: item?.feeName ?? "",
-                              ));
-
-                              // Handle the "Pay Now" button action
-                              // print("Pay Now for ${fee["feeName"]}");
-                            },
-                            label: const Row(
-                              children: [Text("Pay Now")],
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                          // Circular Checkbox for selection
+                          Transform.scale(
+                            scale: 1.2, // Adjust the size of the checkbox
+                            child: Checkbox(
+                              value: _selectedItems[index] ?? false,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedItems[index] = value ?? false;
+                                  _updateTotalAmount(); // Update the total amount
+                                });
+                              },
+                              shape: const CircleBorder(), // Make checkbox circular
+                              activeColor: Colors.blueAccent, // Custom color
                             ),
                           ),
                         ],
@@ -134,7 +131,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     );
                   },
                 ),
-                // Total Amount and Floating Action Button
+                const SizedBox(height: 70),
               ],
             ),
           );
@@ -147,22 +144,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // floatingActionButton: ElevatedButton(
-      //   onPressed: () {},
-      //   style: ElevatedButton.styleFrom(
-      //     backgroundColor: Colors.blueAccent, // Blue button
-      //     shape: RoundedRectangleBorder(
-      //       borderRadius: BorderRadius.circular(50), // Border radius 50
-      //     ),
-      //     padding: const EdgeInsets.symmetric(
-      //         horizontal: 20, vertical: 12), // Adjust padding
-      //   ),
-      //   child: Text(
-      //     "Make Full Payment  ₹${totalAmount.toStringAsFixed(2)}",
-      //     style: const TextStyle(
-      //         color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-      //   ),
-      // ),
+      floatingActionButton: totalAmount == 0
+          ? const SizedBox.shrink()
+          : ElevatedButton(
+              onPressed: () {
+                Get.to(
+                  () => PaymentMethodScreen(
+                    amount: totalAmount.toString(),
+                    heading: "Customized Amount",
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF066AC9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: Text(
+                "Make Payment  ₹${totalAmount.round()}",
+                style:
+                    const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
     );
 
     return GetBuilder(
@@ -176,9 +181,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 title: AppUtil.customText(
                     text: "Tuition Fees ",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16)),
+                        fontFamily: 'Open Sans', fontWeight: FontWeight.w700, fontSize: 16)),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(60),
                   child: Container(
@@ -216,22 +219,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
               bottomNavigationBar: Container(
                 color: const Color(0xffF1F5F9),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   child: SizedBox(
                     width: Get.width,
                     child: customOutlinedButton(
                         OutlinedButton.styleFrom(
                           backgroundColor: ConstClass.themeColor,
-                          side: BorderSide(
-                              width: 1.5, color: ConstClass.themeColor),
+                          side: BorderSide(width: 1.5, color: ConstClass.themeColor),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
                         Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
                             child: AppUtil.customText(
                               text: "Confirm",
                               style: const TextStyle(
@@ -256,10 +256,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         children: [
           AppUtil.customText(
             text: "Fees Details",
-            style: const TextStyle(
-                fontFamily: 'Open Sans',
-                fontWeight: FontWeight.w700,
-                fontSize: 14),
+            style:
+                const TextStyle(fontFamily: 'Open Sans', fontWeight: FontWeight.w700, fontSize: 14),
           ),
           const SizedBox(
             height: 10,
@@ -285,8 +283,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   decoration: const BoxDecoration(
                     color: Color(0xff034BB1),
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(5),
-                        bottomRight: Radius.circular(5)),
+                        bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -335,9 +332,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 AppUtil.customText(
                   text: "First Term",
                   style: const TextStyle(
-                      fontFamily: 'Open Sans',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12),
+                      fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 12),
                 ),
                 AppUtil.customText(
                   text: "Last Due date :- 30-Apr-2024",
@@ -371,8 +366,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget customOutlinedButton(
-      ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
+  Widget customOutlinedButton(ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
     return OutlinedButton(
       style: buttonStyle,
       /* onPressed: () {

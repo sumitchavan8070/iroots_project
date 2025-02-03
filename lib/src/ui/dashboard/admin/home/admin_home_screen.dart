@@ -9,14 +9,103 @@ import 'package:iroots/src/ui/dashboard/admin/admin_report_card/admin_report_car
 import 'package:iroots/src/ui/dashboard/admin/fill_marks/admin_fill_marks.dart';
 import 'package:iroots/src/ui/dashboard/attendance/admin/admin_attendence.dart';
 import 'package:iroots/src/ui/dashboard/homework/admin/admin_homework.dart';
+import 'package:iroots/src/ui/dashboard/payment/LoadAttendenceDataController.dart';
 import 'package:iroots/src/ui/dashboard/reports/staff_report_card.dart';
 import 'package:iroots/src/ui/dashboard/staff/home/staff_home_screen.dart';
+import 'package:iroots/src/ui/dashboard/student/components/AdminCard.dart';
+import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart';
+import 'package:iroots/src/ui/dashboard/student/components/percentage_chart.dart';
+import 'package:iroots/src/ui/dashboard/student/components/student_report_widget.dart';
+import 'package:iroots/src/ui/dashboard/student/components/stuff_activity_card.dart';
 import 'package:iroots/src/utility/const.dart';
+import 'package:iroots/src/utility/constant/asset_path.dart';
 import 'package:iroots/src/utility/util.dart';
+import 'package:lottie/lottie.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class AdminHomePageScreen extends StatelessWidget {
+import '../../student/components/admin_card_list_wdget.dart';
+
+final _loadAttendeanceController = Get.put(LoadAttendenceDataController());
+
+class AdminHomePageScreen extends StatefulWidget {
   const AdminHomePageScreen({super.key});
+
+  @override
+  State<AdminHomePageScreen> createState() => _AdminHomePageScreenState();
+}
+
+class _AdminHomePageScreenState extends State<AdminHomePageScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final RxInt _currentIndex = 0.obs;
+  final List<Widget> textItems = [
+    const AdminCard(
+      heading: "Total Students ",
+      headingCount: "1500",
+      title: "New Admissions",
+      titleCount: "1480",
+      subTitle: "Absent",
+      subTitleCount: "20",
+      bgImage: AssetPath.adminBgOne,
+      cardImage: AssetPath.onePNG,
+    ),
+    const AdminCard(
+      heading: "Total Staff",
+      headingCount: "80",
+      title: "New Join",
+      titleCount: "40",
+      subTitle: "Absent",
+      subTitleCount: "05",
+      bgImage: AssetPath.adminBgTwo,
+      cardImage: AssetPath.twoPNG,
+    ),
+    const AdminCard(
+      heading: "Free Collection",
+      headingCount: "\$ 500",
+      title: "New Total",
+      titleCount: "\$ 1200",
+      subTitle: "",
+      subTitleCount: "",
+      bgImage: AssetPath.adminBgThree,
+      cardImage: AssetPath.threePNG,
+    ),
+    const AdminCard(
+      heading: "Applied TC",
+      headingCount: "05",
+      title: "",
+      titleCount: "",
+      subTitle: "",
+      subTitleCount: "",
+      bgImage: AssetPath.adminBgFour,
+      cardImage: AssetPath.fourPNG,
+    ),
+  ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scrollController.addListener(() {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final itemWidth = screenWidth * 0.85 + 24;
+      final value = (_scrollController.offset / itemWidth).round();
+      final index = value.clamp(0, textItems.length - 1);
+
+      if (_currentIndex.value != index) {
+        _currentIndex.value = index;
+      }
+    });
+
+    _loadApi();
+  }
+
+  _loadApi() async {
+    await _loadAttendeanceController.loadAttendece(
+      startDate: "2024-01-01",
+      endDate: "2024-12-30",
+      fromYear: "2024",
+      toYear: "2025",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +118,39 @@ class AdminHomePageScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                topBarWidget(),
+                const SizedBox(height: 20),
+
+                const AdminCardListWidget(),
+
+                // topBarWidget(),
                 const SizedBox(height: 10),
-                academicYearWidget(logic),
+                // academicYearWidget(logic),
+
+                // const SizedBox(height: 10),
+                // studentAndTeacherWidget(),
+                // const SizedBox(height: 10),
+                // studentReportWidget(),
                 const SizedBox(height: 10),
-                studentAndTeacherWidget(),
+                // _Grid(),
+                const StudentActivityWidget(),
+                _loadAttendeanceController.obx(
+                  (state) {
+                    final attendanceData = state?.data?.dateRangeAttendance;
+                    return AttendanceView(
+                      attendanceData: attendanceData,
+                    );
+                  },
+                  onEmpty: Lottie.asset(AssetPath.noDataFound),
+                  onError: (error) {
+                    return Lottie.asset(AssetPath.noDataFound);
+                  },
+                  onLoading: const CircularProgressIndicator(),
+                ),
                 const SizedBox(height: 10),
-                studentReportWidget(),
-                const SizedBox(height: 10),
-                _Grid(),
-                _buildCalendarMonth(logic),
-                const SizedBox(height: 10),
-                lineChartWidget(logic),
+
+                // lineChartWidget(logic),
+                SizedBox(height: 270, child: PercentageLineChart()),
+
                 const SizedBox(),
               ],
             ),
@@ -580,6 +690,7 @@ class AdminHomePageScreen extends StatelessWidget {
                       child: customDropDown1(logic, logic.lineChartList,
                           (newValue) {
                         logic.selectedLastYear = newValue;
+
 
                         logic.selectYear();
                       }, logic.selectedLastYear),

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:iroots/common/app_data.dart';
 import 'dart:convert';
 import 'package:iroots/src/controller/home/student/fees_details_model.dart';
+import 'package:iroots/src/ui/dashboard/student/home/model/get_attedence_as_per_month_model.dart';
 import 'package:path/path.dart';
 
 class MakePaymentController extends GetxController {
@@ -62,67 +63,3 @@ class MakePaymentController extends GetxController {
 
 
 
-class LoadAttendenceDataController extends GetxController {
-  final prefs = GetStorage();
-
-  RxMap<String, dynamic> yearlyAttendanceSummary = <String, dynamic>{}.obs;
-
-  Future<void> loadAttendece({
-    required String startDate,
-    required String endDate,
-    required int classId,
-    required int sectionId,
-    required int fromYear,
-    required int toYear,
-    required int studentId,
-  }) async {
-    final appNumber = prefs.read("applicationNumber");
-    final stdId = prefs.read("studentId");
-    final classId = prefs.read("class");
-    final parentEmail = prefs.read("email");
-
-    final queryParameters = {
-      'startDate': startDate,
-      'endDate': endDate,
-      'classId': classId.toString(),
-      'sectionId': sectionId.toString(),
-      'fromYear': fromYear.toString(),
-      'toYear': toYear.toString(),
-      'studentId': studentId.toString(),
-    };
-
-    debugPrint("postData $queryParameters || url $url");
-
-    try {
-      // Sending the POST request
-      const baseUrl = "${baseUrlName}Dashboard/StudentsDashBoardAttendanceDetails";
-      final uri = Uri.parse(baseUrl).replace(queryParameters: queryParameters);
-
-      final response = await http.post(
-        uri,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: {},
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        // Extract the "yearlyAttendanceSummary" from the response and update the RxMap
-        final yearlySummary = data['data']['yearlyAttendanceSummary'][0];
-
-        yearlyAttendanceSummary.value = {
-          'totalPresent': yearlySummary['totalPresent'],
-          'totalAbsent': yearlySummary['totalAbsent'],
-          'totalLeave': yearlySummary['totalLeave'],
-        };
-      } else {
-        print("Payment request failed with status: ${response.statusCode}");
-        print("Response: ${response.body}");
-      }
-    } catch (e) {
-      print("Error making payment: $e");
-    }
-  }
-}

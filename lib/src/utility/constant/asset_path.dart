@@ -2,6 +2,7 @@ class AssetPath {
   // Base Paths
   static const String _academicBasePath = "assets/academic";
   static const String _iconsBasePath = "assets/icons";
+  static const String _lottieBasePath = "assets/lottie";
 
   // PNG Assets
   static const String onePNG = "$_academicBasePath/one.png";
@@ -15,6 +16,22 @@ class AssetPath {
   static const String adminBgThree = "$_academicBasePath/three.svg";
   static const String adminBgFour = "$_academicBasePath/four.svg";
 
+
+  // staff acdmic
+  //
+  //
+  //
+  //
+  //
+  //
+  static const String payroll = "$_academicBasePath/Payroll.png";
+  static const String homeworkStaff = "$_academicBasePath/HomeworkStaff.png";
+  static const String timeTableStaff = "$_academicBasePath/TimeTableStaff.png";
+  static const String fillCoScholastic = "$_academicBasePath/Fill Co-Scholastic.png";
+  static const String fillAttendance = "$_academicBasePath/Fill-Attendance.png";
+  static const String fillMarks = "$_academicBasePath/Fill Marks.png";
+
+
   static const String edit = "$_academicBasePath/edit.svg";
   static const String calendar = "$_academicBasePath/calendar.svg";
 
@@ -25,4 +42,10 @@ class AssetPath {
   static const String library = "$_academicBasePath/library.png";
   static const String timetable = "$_academicBasePath/timetable.png";
   static const String result = "$_academicBasePath/result.png";
+
+
+  static const String comingSoon = "$_lottieBasePath/comming_soon.json";
+  static const String noDataFound = "$_lottieBasePath/no_data_found.json";
+
+
 }

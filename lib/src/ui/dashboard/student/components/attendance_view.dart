@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AttendanceView extends StatefulWidget {
-  final Map<String, dynamic> attendanceData;
+  final dynamic attendanceData;
 
   const AttendanceView({Key? key, required this.attendanceData})
       : super(key: key);
@@ -14,9 +14,8 @@ class AttendanceView extends StatefulWidget {
 class AttendanceViewState extends State<AttendanceView> {
   Set<DateTime> presentDates = {};
   Set<DateTime> absentDates = {};
-  Set<DateTime> holidays = {};
-  Set<DateTime> leaveDates = {};
   DateTime _currentMonth = DateTime.now();
+  DateTime _currentDate = DateTime.now(); // Track the current date
 
   @override
   void initState() {
@@ -25,21 +24,19 @@ class AttendanceViewState extends State<AttendanceView> {
   }
 
   void _parseAttendanceData() {
-    presentDates = _convertToDateSet(widget.attendanceData['present']);
-    absentDates = _convertToDateSet(widget.attendanceData['absent']);
-    holidays = _convertToDateSet(widget.attendanceData['holidays']);
-    leaveDates = _convertToDateSet(widget.attendanceData['leaves']);
-  }
-
-  Set<DateTime> _convertToDateSet(List<dynamic>? dates) {
-    if (dates == null) return {};
-    return dates.map((date) => DateTime.parse(date)).toSet();
+    for (var attendance in widget.attendanceData) {
+      final date = DateFormat('dd/MM/yyyy').parse(attendance['createdDate']);
+      if (attendance['markFullDayAbsent'] == "False") {
+        absentDates.add(date); // Add to absentDates if markFullDayAbsent is "False"
+      } else {
+        presentDates.add(date); // Add to presentDates if markFullDayAbsent is "True"
+      }
+    }
   }
 
   List<DateTime> getDisplayDates(DateTime currentDate) {
     final firstDateOfMonth = DateTime(currentDate.year, currentDate.month, 1);
-    final lastDateOfMonth =
-        DateTime(currentDate.year, currentDate.month + 1, 0);
+    final lastDateOfMonth = DateTime(currentDate.year, currentDate.month + 1, 0);
     DateTime firstDisplayDate = firstDateOfMonth;
     DateTime lastDisplayDate = lastDateOfMonth;
 
@@ -61,31 +58,40 @@ class AttendanceViewState extends State<AttendanceView> {
   }
 
   Color _getAttendanceColor(DateTime day) {
+    // Highlight the current date with blue color
+    if (day.year == _currentDate.year &&
+        day.month == _currentDate.month &&
+        day.day == _currentDate.day) {
+      return const Color(0xFF1575FF).withOpacity(0.2);
+    }
     if (presentDates.contains(day)) {
-      return const Color(0xFF0DB166).withOpacity(0.2);
+      return const Color(0xFF0DB166).withOpacity(0.2); // Green for present
     }
     if (absentDates.contains(day)) {
-      return const Color(0xFFFF0000).withOpacity(0.2);
+      return const Color(0xFFFF0000).withOpacity(0.2); // Red for absent
     }
-    if (holidays.contains(day) || day.weekday == DateTime.sunday) {
-      return const Color(0xFF9F7CCB).withOpacity(0.2);
+    if (day.weekday == DateTime.sunday) {
+      return const Color(0xFF9F7CCB).withOpacity(0.2); // Purple for Sundays
     }
-    if (leaveDates.contains(day)) {
-      return Colors.blue;
-    }
-
     return Colors.transparent;
   }
 
   Color _getTextColor(DateTime day) {
-    if (presentDates.contains(day))
-      return const Color(0xFF0DB166).withOpacity(0.6);
-    if (absentDates.contains(day))
-      return const Color(0xFFFF0000).withOpacity(0.6);
-    if (holidays.contains(day) || day.weekday == DateTime.sunday) {
-      return const Color(0xFF9F7CCB).withOpacity(0.6);
+    // Highlight the current date with white text
+    if (day.year == _currentDate.year &&
+        day.month == _currentDate.month &&
+        day.day == _currentDate.day) {
+      return Colors.white;
     }
-    if (leaveDates.contains(day)) return Colors.white;
+    if (presentDates.contains(day)) {
+      return const Color(0xFF0DB166).withOpacity(0.6); // Green text for present
+    }
+    if (absentDates.contains(day)) {
+      return const Color(0xFFFF0000).withOpacity(0.6); // Red text for absent
+    }
+    if (day.weekday == DateTime.sunday) {
+      return const Color(0xFF9F7CCB).withOpacity(0.6); // Purple text for Sundays
+    }
     return day.month == _currentMonth.month
         ? const Color(0xFF1575FF)
         : Colors.grey;
@@ -93,8 +99,7 @@ class AttendanceViewState extends State<AttendanceView> {
 
   void _changeMonth(int offset) {
     setState(() {
-      _currentMonth =
-          DateTime(_currentMonth.year, _currentMonth.month + offset, 1);
+      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + offset, 1);
     });
   }
 
@@ -151,11 +156,11 @@ class AttendanceViewState extends State<AttendanceView> {
             children: weekDays
                 .map(
                   (day) => Text(
-                    day,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, color: Color(0xFF1575FF)),
-                  ),
-                )
+                day,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Color(0xFF1575FF)),
+              ),
+            )
                 .toList(),
           ),
           GridView.builder(
@@ -190,10 +195,10 @@ class AttendanceViewState extends State<AttendanceView> {
                   child: Text(
                     '${day.day}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12,
-                          color: textColor,
-                        ),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: textColor,
+                    ),
                   ),
                 ),
               );

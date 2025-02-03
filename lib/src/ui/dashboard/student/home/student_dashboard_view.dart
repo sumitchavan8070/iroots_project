@@ -25,13 +25,13 @@ class _StudentDashboardViewState extends State<StudentDashboardView> {
             const StudentDetailCard(),
             const SizedBox(height: 18),
             // const AcademicsCard(onPressed: (int ) {  },),
-            const AttendanceView(
-              attendanceData: {
-                "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
-                "absent": ["2025-01-08", "2025-01-12", "2025-01-18"],
-                "holidays": ["2025-01-17"]
-              },
-            ),
+            // const AttendanceView(
+            //   attendanceData: {
+            //     "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
+            //     "absent": ["2025-01-08", "2025-01-12", "2025-01-18"],
+            //     "holidays": ["2025-01-17"]
+            //   },
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(

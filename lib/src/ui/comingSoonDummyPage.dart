@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iroots/src/controller/coming_soon_controller.dart';
-import 'package:iroots/src/utility/const.dart';
+import 'package:iroots/src/utility/constant/asset_path.dart';
+import 'package:lottie/lottie.dart';
 
 class ComingSoonDummyPage extends StatelessWidget {
   const ComingSoonDummyPage({super.key});
@@ -11,11 +12,14 @@ class ComingSoonDummyPage extends StatelessWidget {
     return GetBuilder(
       init: ComingSoonController(),
       builder: (logic) => Scaffold(
-        backgroundColor: ConstClass.themeColor,
+        backgroundColor: Colors.white,
         body: Center(
-          child: Image.asset(
-            "assets/comingSoon.png",
-          ),
+          child: Lottie.asset(AssetPath.comingSoon) ??
+              Center(
+                child: Image.asset(
+                  "assets/comingSoon.png",
+                ),
+              ),
         ),
       ),
     );

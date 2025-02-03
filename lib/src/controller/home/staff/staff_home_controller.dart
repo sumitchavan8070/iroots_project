@@ -86,13 +86,15 @@ class StaffHomeController extends GetxController {
   void onItemTapped(int index) {
     switch (index) {
       case 0:
-        Get.to(() => const StaffAttendanceScreen());
+        Get.to(() => AdminFillMarksScreen(
+          fromAdmin: false,
+          staffDetail: staffDetail.value,
+        ));
         break;
       case 1:
-        Get.to(() => AdminFillMarksScreen(
-              fromAdmin: false,
-              staffDetail: staffDetail.value,
-            ));
+        Get.to(() => const StaffAttendanceScreen());
+
+
 
         break;
       case 2:

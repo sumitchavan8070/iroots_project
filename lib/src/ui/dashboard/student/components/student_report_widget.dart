@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:iroots/src/ui/dashboard/student/components/allocation_tracker_painter.dart';
 
-class StuffActivityCard extends StatefulWidget {
+class StudentActivityWidget extends StatefulWidget {
   final String? studentName;
   final String? classId;
   final String? rollNumber;
@@ -11,7 +11,7 @@ class StuffActivityCard extends StatefulWidget {
   final String? percentage;
   final String? userImage;
 
-  const StuffActivityCard({
+  const StudentActivityWidget({
     super.key,
     this.studentName,
     this.classId,
@@ -22,10 +22,10 @@ class StuffActivityCard extends StatefulWidget {
   });
 
   @override
-  State<StuffActivityCard> createState() => _StuffActivityCardState();
+  State<StudentActivityWidget> createState() => _StudentActivityWidgetState();
 }
 
-class _StuffActivityCardState extends State<StuffActivityCard> {
+class _StudentActivityWidgetState extends State<StudentActivityWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,7 +33,7 @@ class _StuffActivityCardState extends State<StuffActivityCard> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF69A6FE), Color(0xFF1575FF)],
+            colors: [Color(0xFF69A6FE), Color(0xFF69A6FE)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -51,7 +51,7 @@ class _StuffActivityCardState extends State<StuffActivityCard> {
                 children: [
                   const SizedBox(width: 14),
                   Text(
-                    'Staff Activity',
+                    'Student Report',
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
@@ -77,7 +77,7 @@ class _StuffActivityCardState extends State<StuffActivityCard> {
                             ),
                           ),
                           Text(
-                            "13 % Attendance",
+                            "13 pass Students",
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
@@ -102,7 +102,7 @@ class _StuffActivityCardState extends State<StuffActivityCard> {
                             ),
                           ),
                           Text(
-                            "62 % Co-Collective",
+                            "300 fail Students",
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
@@ -110,39 +110,15 @@ class _StuffActivityCardState extends State<StuffActivityCard> {
                           )
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Container(
-                            height: 8,
-                            width: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.purpleAccent,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "23% Mark Academic performance",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontSize: 8, color: Colors.white),
-                          )
-                        ],
-                      ),
+
                     ],
                   ),
                 ],
               ),
               const CircularProgressIndicatorWidget(
-                percentages: [62, 23, 13], // Percentages
-                colors: [Color(0xFF1575FF), Color(0xFF0DB166), Color(0xFF9F7CCB)],
-                text: "2024",
+                percentages: [75, 25], // Percentages
+                colors: [Color(0xFF70D976), Color(0xFFFF0000)],
+                text: "1500",
               ),
             ],
           ),
@@ -227,7 +203,7 @@ class CircularProgressPainter extends CustomPainter {
 
     // 4. Draw Inner Blue Circle
     Paint innerCirclePaint = Paint()
-      ..color = const Color(0xFF1575FF)
+      ..color = const Color(0xFF69A6FE)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, innerCircleRadius, innerCirclePaint);
 

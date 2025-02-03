@@ -15,14 +15,14 @@ import 'package:iroots/src/modal/selection_popup_model.dart';
 import 'package:iroots/src/ui/auth/login_page.dart';
 import 'package:iroots/src/ui/dashboard/attendance/student/student_attendence.dart';
 import 'package:iroots/src/ui/dashboard/homework/student/student_homework.dart';
-import 'package:iroots/src/ui/dashboard/payment/student_payment.dart';
+import 'package:iroots/src/ui/dashboard/payment/fee_details_view.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class StudentHomeController extends GetxController {
   final GetStorage box = Get.put(GetStorage());
-  
+
 
   Student? studentData;
   Datum? studentAttendanceData;
@@ -82,7 +82,7 @@ class StudentHomeController extends GetxController {
   void onItemTapped(int index) {
     switch (index) {
       case 0:
-        Get.to(() =>  PaymentScreen());
+        Get.to(() =>  FeeDetailsView());
         break;
       case 1:
         Get.to(() => const StudentAttendanceScreen(), arguments: studentData);
@@ -114,10 +114,10 @@ class StudentHomeController extends GetxController {
 
       final response = await http.get(
         Uri.parse("${baseUrlName}Student/GetStudentDetails"),
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken',
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
       );
       if (response.statusCode == 200) {
         var loginResponse = studentDetailsFromJson(response.body);
@@ -138,6 +138,7 @@ class StudentHomeController extends GetxController {
           box.write("class", studentData?.classId ?? "-");
           box.write("email", studentData?.parentEmail ?? "-");
           box.write("sectionId", studentData?.sectionId ?? "-");
+          box.write("accessToken", accessToken ?? "-");
 
 
           _sendDeviceToken(loginResponse.data[0]!.student.studentId);
@@ -181,10 +182,10 @@ class StudentHomeController extends GetxController {
       print("sdbhrgber${jsonCredentials}");
       final response = await http.post(
         Uri.parse("${baseUrlName}Attendance/ViewStudentAttendance"),
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken',
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonCredentials,
       );
       print("jsonCredentials${response.statusCode}");
@@ -258,10 +259,10 @@ class StudentHomeController extends GetxController {
 
       final response = await http.post(
         Uri.parse("${baseUrlName}UserCredentials/SendDeviceTokenData"),
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken',
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonCredentials,
       );
       print("sgegegegege${response.statusCode}");

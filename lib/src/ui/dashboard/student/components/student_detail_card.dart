@@ -30,7 +30,8 @@ class StudentDetailCard extends StatefulWidget {
 class _StudentDetailCardState extends State<StudentDetailCard> {
   @override
   Widget build(BuildContext context) {
-    debugPrint("widget.userImage ${widget.userImage}");
+
+
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
@@ -50,7 +51,8 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
               children: [
                 Row(
                   children: [
-                    // Image.network(widget.userImage ?? "N/A")??
+                    if(widget.userImage == null)
+                    Image.network(widget.userImage ?? "N/A"),
                     ClipOval(
                       child:   Image.asset(
                         AssetPath.onePNG,
@@ -85,15 +87,29 @@ class _StudentDetailCardState extends State<StudentDetailCard> {
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600),
                               ),
-                              TextSpan(
-                                text: ' | Roll No: ${widget.rollNumber ?? "N/A"} ',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                              ),
+
+                              if(widget.rollNumber != "")...[
+                                TextSpan(
+                                  text: widget.rollNumber ?? "N/A",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+
+
+                              //   TextSpan(
+                              //   text: ' | Roll No: ${widget.rollNumber ?? "N/A"} ',
+                              //   style: Theme.of(context)
+                              //       .textTheme
+                              //       .bodySmall
+                              //       ?.copyWith(
+                              //           color: Colors.white,
+                              //           fontWeight: FontWeight.w600),
+                              // ),
                             ],
                           ),
                         ),

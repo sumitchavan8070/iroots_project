@@ -139,13 +139,13 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
               ),
             ),
             const SizedBox(height: 20),
-            const AttendanceView(
-              attendanceData: {
-                "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
-                "absent": ["2025-01-08", "2025-01-12", "2025-01-18"],
-                "holidays": ["2025-01-17"]
-              },
-            ),
+            // const AttendanceView(
+            //   attendanceData: {
+            //     "present": ["2025-01-01", "2025-01-10", "2025-01-15"],
+            //     "absent": ["2025-01-08", "2025-01-12", "2025-01-18"],
+            //     "holidays": ["2025-01-17"]
+            //   },
+            // ),
             const StuffActivityCard(
               studentName: "",
               date: "N/A",

@@ -107,7 +107,7 @@ class AdminCard extends StatelessWidget {
                   ],
                 ),
                 Image.asset(
-                  'assets/icons/admin_card_bg.png',
+                  'assets/academic/admin_card_bg.png',
                   height: 114,
                   width: 132,
                 ),

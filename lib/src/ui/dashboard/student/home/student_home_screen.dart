@@ -10,9 +10,13 @@ import 'package:iroots/src/ui/dashboard/student/components/attendance_view.dart'
 import 'package:iroots/src/ui/dashboard/student/components/student_detail_card.dart';
 import 'package:iroots/src/ui/dashboard/student/components/stuff_activity_card.dart';
 import 'package:iroots/src/utility/const.dart';
+import 'package:iroots/src/utility/constant/asset_path.dart';
 import 'package:iroots/src/utility/util.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import '../../payment/LoadAttendenceDataController.dart';
 
 final _loadAttendeanceController = Get.put(LoadAttendenceDataController());
 
@@ -32,20 +36,12 @@ class _StudentHomePageScreenState extends State<StudentHomePageScreen> {
   }
 
   _loadApi() async {
-    final prefs = GetStorage();
-
-    final stdId = prefs.read("studentId");
-    final classId = prefs.read("class");
-    final sectionId = prefs.read("sectionId");
-
     await _loadAttendeanceController.loadAttendece(
-        startDate: "2024-01-01",
-        endDate: "2024-12-30",
-        classId: classId,
-        sectionId: sectionId,
-        fromYear: 2024,
-        toYear: 2025,
-        studentId: stdId);
+      startDate: "2024-01-01",
+      endDate: "2024-12-30",
+      fromYear: "2024",
+      toYear: "2025",
+    );
   }
 
   @override
@@ -77,15 +73,19 @@ class _StudentHomePageScreenState extends State<StudentHomePageScreen> {
                       logic.onItemTapped(i);
                     },
                   ),
-                  const AttendanceView(
-                    attendanceData: {
-                      "present": ["2025-01-02", "2025-01-03"],
-                      "absent": ["2025-01-13"],
-                      "holidays": ["2025-01-04"],
-                      "leaves": ["2025-01-07"]
+                  _loadAttendeanceController.obx(
+                    (state) {
+                      final attendanceData = state?.data?.dateRangeAttendance;
+                      return AttendanceView(
+                        attendanceData: attendanceData,
+                      );
                     },
-                  ),
-                  // _buildCalendarMonth(logic),
+                    onEmpty: Lottie.asset(AssetPath.noDataFound),
+                    onError: (error) {
+                      return Lottie.asset(AssetPath.noDataFound);
+                    },
+                    onLoading: const CircularProgressIndicator(),
+                  ), // _buildCalendarMonth(logic),
                   const SizedBox(height: 10),
 
                   Obx(
