@@ -8,20 +8,17 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:iroots/common/app_data.dart';
-import 'package:iroots/src/controller/dashboard/dashBoard_controller.dart';
 import 'package:iroots/src/controller/home/staff/staff_home_controller.dart';
 import 'package:iroots/src/modal/attendance/showStudentAttendanceModalClass.dart';
 import 'package:iroots/src/modal/attendance/staffModalClass.dart';
 import 'package:iroots/src/modal/attendance/studentAttendanceModalClass.dart';
 import 'package:iroots/src/ui/auth/login_page.dart';
-import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ViewAttendanceController extends GetxController {
   final GetStorage box = Get.put(GetStorage());
   final staffHomeWorkController = Get.put(StaffHomeController());
-  
 
   StaffData? selectedStudent;
   List<StaffData> studentDataList = [];
@@ -36,15 +33,11 @@ class ViewAttendanceController extends GetxController {
   List<Datum?> studentListData = [];
   List<Attendance?> attendance = [];
   RxBool isAttandanceDataFound = false.obs;
-  String? selectedAssignmentDate =
-      DateFormat('dd/MM/yyyy').format(DateTime.now());
-  String? selectedSubmissionDate =
-      DateFormat('dd/MM/yyyy').format(DateTime.now());
+  String? selectedAssignmentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  String? selectedSubmissionDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
   List<String> allBetweenDates = [];
 
   String? accessToken;
-
-
 
   @override
   void onInit() {
@@ -91,19 +84,17 @@ class ViewAttendanceController extends GetxController {
 
       String jsonCredentials = jsonEncode(credentials);
       final response = await http.post(
-        Uri.parse(
-            "${baseUrlName}Attendance/StudentAttendenceForCreation"),
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken',
-          },
+        Uri.parse("${baseUrlName}Attendance/StudentAttendenceForCreation"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonCredentials,
       );
 
       if (response.statusCode == 200) {
         var studentAttendance = showStudentAttendanceModalClassFromJson(response.body);
-        if (studentAttendance.responseCode == "201" &&
-            studentAttendance.data!.isNotEmpty) {
+        if (studentAttendance.responseCode == "201" && studentAttendance.data!.isNotEmpty) {
           studentDataList.clear();
           studentDataList.add(StaffData(
             staffName: 'All Students',
@@ -140,10 +131,8 @@ class ViewAttendanceController extends GetxController {
       return;
     }
 
-    DateTime assignmentDate =
-        DateFormat('dd/MM/yyyy').parse(selectedAssignmentDate!);
-    DateTime submissionDate =
-        DateFormat('dd/MM/yyyy').parse(selectedSubmissionDate!);
+    DateTime assignmentDate = DateFormat('dd/MM/yyyy').parse(selectedAssignmentDate!);
+    DateTime submissionDate = DateFormat('dd/MM/yyyy').parse(selectedSubmissionDate!);
 
     if (assignmentDate.isAfter(submissionDate)) {
       AppUtil.snackBar('End date cannot be less than the start date');
@@ -166,8 +155,9 @@ class ViewAttendanceController extends GetxController {
     _showProgress();
 
     allBetweenDates.clear();
-    allBetweenDates.addAll(getAllFormattedDatesBetween(
-        selectedAssignmentDate!, selectedSubmissionDate!));
+    allBetweenDates.addAll(
+      getAllFormattedDatesBetween(selectedAssignmentDate!, selectedSubmissionDate!),
+    );
 
     try {
       Map<String, String> credentials = {};
@@ -195,10 +185,10 @@ class ViewAttendanceController extends GetxController {
 
       final response = await http.post(
         Uri.parse("${baseUrlName}Attendance/ViewStudentAttendance"),
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken',
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonCredentials,
       );
 
@@ -209,8 +199,7 @@ class ViewAttendanceController extends GetxController {
         attendance.clear();
 
         var studentAttendance = studentAttendanceFromJson(response.body);
-        if (studentAttendance.responseCode == "200" &&
-            studentAttendance.data.isNotEmpty) {
+        if (studentAttendance.responseCode == "200" && studentAttendance.data.isNotEmpty) {
           studentData = studentAttendance.data[0];
           print("sdgfsgsgvgevsdf${studentData!.totalAttendedDays}");
 

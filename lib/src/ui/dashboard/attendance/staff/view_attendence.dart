@@ -22,9 +22,10 @@ class ViewAttendanceScreen extends StatelessWidget {
           title: AppUtil.customText(
             text: "View Student Attendance",
             style: const TextStyle(
-                fontFamily: 'Open Sans',
-                fontWeight: FontWeight.w700,
-                fontSize: 16),
+              fontFamily: 'Open Sans',
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -40,49 +41,47 @@ class ViewAttendanceScreen extends StatelessWidget {
                       // logic.staffHomeWorkController.staffClass!
                       //     .dataListItemName,
                       ""),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  customDropDown1(
-                    "Select Section",""
+                  const SizedBox(height: 10),
+                  customDropDown1("Select Section", ""
 
-                    // logic
-                    //     .staffHomeWorkController.staffSection!.dataListItemName,
-                  ),
+                      // logic
+                      //     .staffHomeWorkController.staffSection!.dataListItemName,
+                      ),
                   const SizedBox(
                     height: 10,
                   ),
                   customDropDown(
-                      logic,
-                      "Select Student",
-                      "Please Select Student",
-                      logic.studentDataList, (newValue) {
-                    logic.selectedStudent = newValue;
-                  }, logic.selectedStudent),
+                    logic,
+                    "Select Student",
+                    "Please Select Student",
+                    logic.studentDataList,
+                    (newValue) {
+                      logic.selectedStudent = newValue;
+                    },
+                    logic.selectedStudent,
+                  ),
                   const SizedBox(
                     height: 10,
                   ),
+
+
                   AppUtil.customText(
                     text: "From Date",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
+                        fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   const SizedBox(
                     height: 5,
                   ),
                   customOutlinedButton(
                       OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                            width: 1.0, color: Color(0xff94A3B8)),
+                        side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,24 +110,20 @@ class ViewAttendanceScreen extends StatelessWidget {
                   AppUtil.customText(
                     text: "To Date",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
+                        fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   const SizedBox(
                     height: 5,
                   ),
                   customOutlinedButton(
                       OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                            width: 1.0, color: Color(0xff94A3B8)),
+                        side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,15 +157,13 @@ class ViewAttendanceScreen extends StatelessWidget {
                         width: Get.width,
                         child: customOutlinedButton(
                             OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                  width: 1.0, color: Color(0xff94A3B8)),
+                              side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                               child: AppUtil.customText(
                                 text: "Show",
                                 style: const TextStyle(
@@ -259,8 +252,8 @@ class ViewAttendanceScreen extends StatelessWidget {
                                   controller: logic.horizontalScrollController,
                                   scrollDirection: Axis.horizontal,
                                   child: Scrollable(
-                                    viewportBuilder: (BuildContext context,
-                                        ViewportOffset position) {
+                                    viewportBuilder:
+                                        (BuildContext context, ViewportOffset position) {
                                       return DataTable(
                                         border: TableBorder.all(),
                                         columns: [
@@ -304,19 +297,14 @@ class ViewAttendanceScreen extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12),
                                           )),
-                                          for (var date
-                                              in logic.allBetweenDates)
+                                          for (var date in logic.allBetweenDates)
                                             DataColumn(
                                               label: AppUtil.customText(
                                                 textAlign: TextAlign.center,
                                                 // text: date,
-                                                text: date
-                                                    .split("/")
-                                                    .first
-                                                    .trim(),
+                                                text: date.split("/").first.trim(),
                                                 style: const TextStyle(
-                                                    color:
-                                                        Color(0xff0F172A),
+                                                    color: Color(0xff0F172A),
                                                     fontFamily: 'Open Sans',
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 12),
@@ -337,18 +325,12 @@ class ViewAttendanceScreen extends StatelessWidget {
                                           DataRow(
                                             cells: [
                                               datacell("${1}"),
-                                              datacell(logic
-                                                  .attendance[0]!.studentName),
-                                              datacell(logic
-                                                  .attendance[0]!.className),
-                                              datacell(logic
-                                                  .attendance[0]!.sectionName),
-                                              for (var date
-                                                  in logic.allBetweenDates)
-                                                buildDateComparisonWidget(
-                                                    date, logic),
-                                              datacell(logic
-                                                  .studentData!.attendancePer),
+                                              datacell(logic.attendance[0]!.studentName),
+                                              datacell(logic.attendance[0]!.className),
+                                              datacell(logic.attendance[0]!.sectionName),
+                                              for (var date in logic.allBetweenDates)
+                                                buildDateComparisonWidget(date, logic),
+                                              datacell(logic.studentData!.attendancePer),
                                             ],
                                           ),
                                         ],
@@ -373,109 +355,84 @@ class ViewAttendanceScreen extends StatelessWidget {
                                     thickness: 8,
                                     radius: const Radius.circular(8),
                                     interactive: true,
-                                    controller:
-                                        logic.horizontalScrollController,
+                                    controller: logic.horizontalScrollController,
                                     thumbVisibility: true,
                                     child: SingleChildScrollView(
-                                      controller:
-                                          logic.horizontalScrollController,
+                                      controller: logic.horizontalScrollController,
                                       scrollDirection: Axis.horizontal,
                                       child: Scrollable(
-                                        viewportBuilder: (BuildContext context,
-                                            ViewportOffset position) {
-                                          return DataTable(
-                                              border: TableBorder.all(),
-                                              columns: [
-                                                DataColumn(
-                                                    label: AppUtil.customText(
+                                        viewportBuilder:
+                                            (BuildContext context, ViewportOffset position) {
+                                          return DataTable(border: TableBorder.all(), columns: [
+                                            DataColumn(
+                                                label: AppUtil.customText(
+                                              textAlign: TextAlign.center,
+                                              text: "S. no.",
+                                              style: const TextStyle(
+                                                  color: Color(0xff0F172A),
+                                                  fontFamily: 'Open Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12),
+                                            )),
+                                            DataColumn(
+                                                label: AppUtil.customText(
+                                              textAlign: TextAlign.center,
+                                              text: "Student Name",
+                                              style: const TextStyle(
+                                                  color: Color(0xff0F172A),
+                                                  fontFamily: 'Open Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12),
+                                            )),
+                                            DataColumn(
+                                                label: AppUtil.customText(
+                                              textAlign: TextAlign.center,
+                                              text: "Class",
+                                              style: const TextStyle(
+                                                  color: Color(0xff0F172A),
+                                                  fontFamily: 'Open Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12),
+                                            )),
+                                            DataColumn(
+                                                label: AppUtil.customText(
+                                              textAlign: TextAlign.center,
+                                              text: "Section",
+                                              style: const TextStyle(
+                                                  color: Color(0xff0F172A),
+                                                  fontFamily: 'Open Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12),
+                                            )),
+                                            for (var date in logic.allBetweenDates)
+                                              DataColumn(
+                                                label: AppUtil.customText(
                                                   textAlign: TextAlign.center,
-                                                  text: "S. no.",
+                                                  // text: date,
+                                                  text: date.split("/").first.trim(),
                                                   style: const TextStyle(
-                                                      color: Color(
-                                                          0xff0F172A),
+                                                      color: Color(0xff0F172A),
                                                       fontFamily: 'Open Sans',
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                                      fontWeight: FontWeight.w600,
                                                       fontSize: 12),
-                                                )),
-                                                DataColumn(
-                                                    label: AppUtil.customText(
-                                                  textAlign: TextAlign.center,
-                                                  text: "Student Name",
-                                                  style: const TextStyle(
-                                                      color: Color(
-                                                          0xff0F172A),
-                                                      fontFamily: 'Open Sans',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12),
-                                                )),
-                                                DataColumn(
-                                                    label: AppUtil.customText(
-                                                  textAlign: TextAlign.center,
-                                                  text: "Class",
-                                                  style: const TextStyle(
-                                                      color: Color(
-                                                          0xff0F172A),
-                                                      fontFamily: 'Open Sans',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12),
-                                                )),
-                                                DataColumn(
-                                                    label: AppUtil.customText(
-                                                  textAlign: TextAlign.center,
-                                                  text: "Section",
-                                                  style: const TextStyle(
-                                                      color: Color(
-                                                          0xff0F172A),
-                                                      fontFamily: 'Open Sans',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12),
-                                                )),
-                                                for (var date
-                                                    in logic.allBetweenDates)
-                                                  DataColumn(
-                                                    label: AppUtil.customText(
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      // text: date,
-                                                      text: date
-                                                          .split("/")
-                                                          .first
-                                                          .trim(),
-                                                      style: const TextStyle(
-                                                          color: Color(
-                                                              0xff0F172A),
-                                                          fontFamily:
-                                                              'Open Sans',
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          fontSize: 12),
-                                                    ),
-                                                  ),
-                                                DataColumn(
-                                                    label: AppUtil.customText(
-                                                  textAlign: TextAlign.center,
-                                                  text: "Attendance %",
-                                                  style: const TextStyle(
-                                                      color: Color(
-                                                          0xff0F172A),
-                                                      fontFamily: 'Open Sans',
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12),
-                                                )),
-                                              ],
-                                              rows: [
-                                                for (var index = 0;
-                                                    index <
-                                                        logic.studentListData
-                                                            .length;
-                                                    index++)
-                                                  buildDataRow(index, logic),
-                                              ]);
+                                                ),
+                                              ),
+                                            DataColumn(
+                                                label: AppUtil.customText(
+                                              textAlign: TextAlign.center,
+                                              text: "Attendance %",
+                                              style: const TextStyle(
+                                                  color: Color(0xff0F172A),
+                                                  fontFamily: 'Open Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12),
+                                            )),
+                                          ], rows: [
+                                            for (var index = 0;
+                                                index < logic.studentListData.length;
+                                                index++)
+                                              buildDataRow(index, logic),
+                                          ]);
                                         },
                                       ),
                                     ),
@@ -511,15 +468,13 @@ class ViewAttendanceScreen extends StatelessWidget {
                     child: customOutlinedButton(
                         OutlinedButton.styleFrom(
                           backgroundColor: ConstClass.themeColor,
-                          side: BorderSide(
-                              width: 1.5, color: ConstClass.themeColor),
+                          side: BorderSide(width: 1.5, color: ConstClass.themeColor),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
                         Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
                             child: AppUtil.customText(
                               text: "Mark Attendance",
                               style: const TextStyle(
@@ -542,15 +497,13 @@ class ViewAttendanceScreen extends StatelessWidget {
                           width: Get.width,
                           child: customOutlinedButton(
                               OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                    width: 1.5, color: Color(0xff0DB166)),
+                                side: const BorderSide(width: 1.5, color: Color(0xff0DB166)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                                 child: AppUtil.customText(
                                   text: "Export to Excel",
                                   style: const TextStyle(
@@ -575,8 +528,7 @@ class ViewAttendanceScreen extends StatelessWidget {
     );
   }
 
-  Widget customOutlinedButton(
-      ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
+  Widget customOutlinedButton(ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
     return OutlinedButton(
       style: buttonStyle,
       onPressed: onPressed,
@@ -609,10 +561,8 @@ class ViewAttendanceScreen extends StatelessWidget {
       children: [
         AppUtil.customText(
           text: dropDownText,
-          style: const TextStyle(
-              fontFamily: 'Open Sans',
-              fontWeight: FontWeight.w600,
-              fontSize: 14),
+          style:
+              const TextStyle(fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
         ),
         const SizedBox(
           height: 2,
@@ -626,9 +576,7 @@ class ViewAttendanceScreen extends StatelessWidget {
                 ),
                 value: value,
                 style: const TextStyle(
-                    fontFamily: 'Open Sans',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14),
+                    fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
                 items: staffDataList.map((item) {
                   return DropdownMenuItem<StaffData>(
                       value: item,
@@ -692,10 +640,8 @@ class ViewAttendanceScreen extends StatelessWidget {
       children: [
         AppUtil.customText(
           text: title,
-          style: const TextStyle(
-              fontFamily: 'Open Sans',
-              fontWeight: FontWeight.w600,
-              fontSize: 14),
+          style:
+              const TextStyle(fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
         ),
         const SizedBox(
           height: 2,
@@ -736,12 +682,11 @@ class ViewAttendanceScreen extends StatelessWidget {
     );
   }
 
-  DataCell buildDateComparisonWidget(
-      String date, ViewAttendanceController logic) {
+  DataCell buildDateComparisonWidget(String date, ViewAttendanceController logic) {
     for (var entry in logic.attendance) {
       if (entry!.createdDate == date) {
-        return buildAttendanceIcon(entry.markFullDayAbsent == "True",
-            entry.markHalfDayAbsent == " True");
+        return buildAttendanceIcon(
+            entry.markFullDayAbsent == "True", entry.markHalfDayAbsent == " True");
       }
     }
     return const DataCell(SizedBox());
@@ -750,8 +695,8 @@ class ViewAttendanceScreen extends StatelessWidget {
   DataCell allbuildDateComparisonWidget(String date, Datum? logic) {
     for (var entry in logic!.attendance) {
       if (entry!.createdDate == date) {
-        return buildAttendanceIcon(entry.markFullDayAbsent == "True",
-            entry.markHalfDayAbsent == " True");
+        return buildAttendanceIcon(
+            entry.markFullDayAbsent == "True", entry.markHalfDayAbsent == " True");
       }
     }
     return const DataCell(SizedBox());
@@ -781,10 +726,7 @@ class ViewAttendanceScreen extends StatelessWidget {
       return DataCell(AppUtil.customText(
         text: "✖",
         style: const TextStyle(
-            color: Colors.red,
-            fontFamily: 'Open Sans',
-            fontWeight: FontWeight.w600,
-            fontSize: 16),
+            color: Colors.red, fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 16),
       ));
     } else {
       return const DataCell(SizedBox());
@@ -898,8 +840,7 @@ class ViewAttendanceScreen extends StatelessWidget {
       datacell(student!.attendance[0]!.className!),
       datacell(student.attendance[0]!.studentName),
       datacell(student.attendance[0]!.sectionName),
-      for (var date in logic.allBetweenDates)
-        allbuildDateComparisonWidget(date, student),
+      for (var date in logic.allBetweenDates) allbuildDateComparisonWidget(date, student),
       datacell(student.attendancePer),
     ];
 

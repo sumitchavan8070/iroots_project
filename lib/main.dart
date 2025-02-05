@@ -54,6 +54,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: ConstClass.themeColor,
         primarySwatch: Colors.blue,
+        fontFamily: "Open Sans"
       ),
       home: const SplashPage(),
     );
