@@ -19,6 +19,7 @@ class LoadAttendenceDataController extends GetxController with StateMixin<GetAtt
     required String toYear,
   }) async {
     final appNumber = prefs.read("applicationNumber");
+
     final stdId = prefs.read("studentId");
     final classId = prefs.read("class");
     final sectionId = prefs.read("sectionId");

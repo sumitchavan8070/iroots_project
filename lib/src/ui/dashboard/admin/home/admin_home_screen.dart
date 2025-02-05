@@ -136,8 +136,12 @@ class _AdminHomePageScreenState extends State<AdminHomePageScreen> {
                 _loadAttendeanceController.obx(
                   (state) {
                     final attendanceData = state?.data?.dateRangeAttendance;
+                    if(state?.responseCode == "500"){
+                      Lottie.asset(AssetPath.noDataFound);
+                    }
+
                     return AttendanceView(
-                      attendanceData: attendanceData,
+                      attendanceData: attendanceData  ,
                     );
                   },
                   onEmpty: Lottie.asset(AssetPath.noDataFound),

@@ -10,9 +10,10 @@ import 'package:iroots/src/controller/home/staff/staff_home_controller.dart';
 import 'package:iroots/src/modal/attendance/showStudentAttendanceModalClass.dart';
 import 'package:iroots/src/modal/attendance/studentAttendanceByStaffModalClass.dart';
 import 'package:iroots/src/ui/auth/login_page.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/staff_attendence.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
-
+final classController = Get.put(ClassController());
 class StaffAttendanceController extends GetxController {
   final GetStorage box = Get.put(GetStorage());
   final staffHomeWorkController = Get.put(StaffHomeController());
@@ -44,7 +45,16 @@ class StaffAttendanceController extends GetxController {
   }
 
   String formatDate() {
-    return DateFormat('dd-MMM-yyyy').format(_selectedDate);
+    final date = DateFormat('dd-MMM-yyyy').format(_selectedDate);
+    final day = DateFormat('EEEE').format(_selectedDate); // Get full day name
+
+    classController.createdDateIdForAPi.value = date;
+    classController.dayIdForAPi.value = day;
+
+    debugPrint("Formatted Date: $date");
+    debugPrint("Day: $day");
+
+    return date;
   }
 
   void pickDateDialog(BuildContext context) {
@@ -93,17 +103,40 @@ class StaffAttendanceController extends GetxController {
       //   "toDate": _selectedDateFromCalender,
       // };
 
-      String jsonCredentials = jsonEncode(credentials);
+     final  postData =
 
-      http.Response response = await http.post(
-        Uri.parse(
-            "${baseUrlName}Attendance/StudentAttendenceForCreation"),
+      {
+      "attendanceId": 0,
+      "classId": classController.classIdForAPi.value.toString() ?? 207,
+      "sectionId":classController.sectionIdForAPi.value.toString() ??  24,
+      "className": classController.classNameIdForAPi.value.toString() ?? "Class-Nursery",
+      "sectionName": classController.sectionNameIdForAPi.value.toString() ??  "GREEN",
+      "markFullDayAbsent": "true",
+      "markHalfDayAbsent": "false",
+      // "studentRegisterId": 2426,
+      "studentName": classController.studentNameIdForAPi.value.toString() ??  "VINAYAK MANDOR",
+      "createdDate": classController.createdDateIdForAPi.value.toString() ??  "03/02/2025",
+      "day":classController.dayIdForAPi.value.toString() ??  "Monday",
+      "createdBy": "admin",
+      "others": "False"
+      };
+
+
+      final String jsonBody = jsonEncode(postData);
+
+      final response = await http.post(
+        Uri.parse("https://stmarysapi.lumensof.in/api/Attendance/StudentAttendance"),
+
+
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        body: jsonCredentials,
+        body: jsonBody,
       );
+
+      debugPrint("postdata::  ${postData} ");
+      debugPrint("here is the api error issue ${response.body} ");
 
       if (response.statusCode == 200) {
         var studentAttendance =

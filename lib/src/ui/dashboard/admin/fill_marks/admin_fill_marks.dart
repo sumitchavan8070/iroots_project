@@ -86,7 +86,7 @@ class _AdminFillMarksScreenState extends State<AdminFillMarksScreen> {
                                   customDropDown("Select Staff",
                                       widget.staffDetail?.name ?? ""),
                                 const SizedBox(height: 12),
-                                _Class(con: con),
+                                SelectClass(con: con),
                                 const SizedBox(height: 12),
                                 _Section(con: con),
                                 const SizedBox(height: 12),
@@ -912,10 +912,10 @@ class _Section extends StatelessWidget {
 
 /// Class
 
-class _Class extends StatelessWidget {
+class SelectClass extends StatelessWidget {
   final AdminFillController con;
 
-  const _Class({required this.con});
+  const SelectClass({required this.con});
 
   @override
   Widget build(BuildContext context) {

@@ -39,8 +39,7 @@ class ApiHandler {
     required String token,
     required Map<String, dynamic> body,
   }) async {
-    debugPrint(url);
-    debugPrint(body.toString());
+
     http.Response response = await http.post(
       Uri.parse(url),
       headers: {
@@ -49,6 +48,11 @@ class ApiHandler {
       },
       body: jsonEncode(body),
     );
+
+    debugPrint("Api Url   ||  $url :: statusCode --> ${response.statusCode} ");
+    debugPrint("post data ||  ${body.toString()}");
+    debugPrint("Access token ||  ${token}");
+
     return response;
   }
 
