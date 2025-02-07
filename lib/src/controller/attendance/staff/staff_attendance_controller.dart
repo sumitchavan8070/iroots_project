@@ -86,7 +86,7 @@ class StaffAttendanceController extends GetxController {
       return;
     }
 
-    _showStudentAtten();
+    // _showStudentAtten();
   }
 
   Future<void> _showStudentAtten() async {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import 'package:iroots/src/ui/dashboard/attendance/staff/get_class_list_model.da
 import 'package:iroots/src/ui/dashboard/attendance/staff/get_section_list_model.dart';
 import 'package:iroots/src/ui/dashboard/attendance/staff/get_staff_list_model.dart';
 import 'package:iroots/src/ui/dashboard/attendance/staff/get_student_table_show_modal.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/test_pay_view.dart';
 import 'package:iroots/src/ui/dashboard/attendance/staff/update_staff_attendence.dart';
 import 'package:iroots/src/ui/dashboard/attendance/staff/view_attendence.dart';
 import 'package:iroots/src/utility/const.dart';
@@ -40,7 +42,10 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
   final prefs = GetStorage();
 
   _loadClassFromApi() async {
-    await _classController.fetchGetStaffList();
+
+    final staffId = _staffAttendanceController
+        .staffHomeWorkController.staffDetail.value.staffid;
+    await _classController.fetchClassData(staffId);
   }
 
   @override
@@ -94,27 +99,32 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _classController.obx(
-                    (state) {
-                      return _selectStaffWidget(
-                        title: "Select Staff",
-                        onChanged: (selectedStaff, staffID) async {
-                          setState(() {
-                            _selectedStaff = selectedStaff;
-                            _selectedStaffID = staffID;
-                          });
-
-                          await _classController.fetchClassData(staffID);
-                          _classController.studentNameIdForAPi.value = selectedStaff;
-
-                          debugPrint("selectedClass $selectedStaff || selectedClassID $staffID");
-                        },
-                        getStaffListModel: state?.model3 ?? GetStaffListModel(),
-                        context: context,
-                      );
-                    },
+                  customDropDown(
+                    "Select Staff",
+                    logic.staffHomeWorkController.staffDetail.value.name,
                   ),
-
+                  // _classController.obx(
+                  //   (state) {
+                  //     return _selectStaffWidget(
+                  //       title: "Select Staff",
+                  //       onChanged: (selectedStaff, staffID) async {
+                  //         setState(() {
+                  //           _selectedStaff = selectedStaff;
+                  //           _selectedStaffID = staffID;
+                  //         });
+                  //
+                  //         await _classController.fetchClassData(staffID);
+                  //         _classController.studentNameIdForAPi.value =
+                  //             selectedStaff;
+                  //
+                  //         debugPrint(
+                  //             "selectedClass $selectedStaff || selectedClassID $staffID");
+                  //       },
+                  //       getStaffListModel: state?.model3 ?? GetStaffListModel(),
+                  //       context: context,
+                  //     );
+                  //   },
+                  // ),
                   const SizedBox(height: 10),
                   _classController.obx(
                     (state) {
@@ -127,12 +137,20 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
                           });
                           debugPrint(
                               "selectedClass $selectedClass || selectedClassID $selectedClassID");
+                          final staffId = _staffAttendanceController
+                              .staffHomeWorkController
+                              .staffDetail
+                              .value
+                              .staffid;
+
                           await _classController.fetchSectionData(
                             selectedClassID,
-                            _selectedStaffID.toString(),
+                            staffId.toString(),
                           );
-                          _classController.classIdForAPi.value = selectedClassID;
-                          _classController.classNameIdForAPi.value = selectedClass;
+                          _classController.classIdForAPi.value =
+                              selectedClassID;
+                          _classController.classNameIdForAPi.value =
+                              selectedClass;
                         },
                         getClassListModel: state?.model1 ?? GetClassListModel(),
                         context: context,
@@ -149,40 +167,40 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
                             _selectedSection = selectedSection;
                             _selectedSectionID = selectedSectionID;
                           });
-                          _classController.sectionIdForAPi.value = selectedSectionID;
-                          _classController.sectionNameIdForAPi.value = selectedSection;
+                          _classController.sectionIdForAPi.value =
+                              selectedSectionID;
+                          _classController.sectionNameIdForAPi.value =
+                              selectedSection;
 
                           debugPrint(
                               "selectedClass $_selectedSection || selectedClassID $selectedSectionID");
                         },
-                        getSectionListModel: state?.model2 ?? GetSectionListModel(),
+                        getSectionListModel:
+                            state?.model2 ?? GetSectionListModel(),
                         context: context,
                       );
                     },
                   ),
-
-                  const SizedBox(height: 10),
-                  // customDropDown(
-                  //     "Select Section",
-                  //     // logic.staffHomeWorkController.staffSection
-                  //     //         ?.dataListItemName ??
-                  //     ""),
                   const SizedBox(height: 10),
                   AppUtil.customText(
                     text: "Select Date",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+                        fontFamily: 'Open Sans',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
                   ),
                   const SizedBox(height: 10),
                   customOutlinedButton(
                       OutlinedButton.styleFrom(
-                        side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
+                        side: const BorderSide(
+                            width: 1.0, color: Color(0xff94A3B8)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -208,58 +226,68 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
                   const SizedBox(
                     height: 20,
                   ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Obx(() {
+                        return
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ConstClass.themeColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(34),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 12),
+                              fixedSize: const Size(150, 50),
+                            ),
+                            onPressed: () async {
+                              // Get.to(() =>  PaymentPage());
+                              // return;
+                              _attendanceController.postAttendanceData();
+                            },
+                            child: _attendanceController.isLoading.value ? CircularProgressIndicator() : Text(
+                              "Show",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                          );
+                      },)
+                    ],
+                  ),
 
                   _attendanceController.obx(
                     (state) {
                       return Column(
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: ConstClass.themeColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(34),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                                  fixedSize:
-                                      const Size(150, 50), // Set the desired width and height here
-                                ),
-                                onPressed: () async {
-                                  _attendanceController.postAttendanceData();
-                                  setState(() {});
-                                },
-                                child: _attendanceController.isLoading.value ==
-                                        true // Assuming `isLoading` is tracked in the controller
-                                    ? const CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      )
-                                    : Text(
-                                        "Show",
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                            ),
-                                      ),
-                              ),
-                            ],
-                          ),
+                          if (state?.tableData?.isEmpty == true) ...[
+                            const SizedBox(height: 20),
+                            const Center(
+                              child: Text("No Attendance Data found "),
+                            )
+                          ],
                           const SizedBox(height: 40),
                           if (state?.tableData?.isEmpty == false)
-                            StudentTable(studentsListData: state ?? GetStudentTableShowModal()),
+                            StudentTable(
+                              studentsListData:
+                                  state ?? GetStudentTableShowModal(),
+                            ),
                           const SizedBox(height: 40),
                         ],
                       );
                     },
-                    onLoading: const CircularProgressIndicator(),
+                    onLoading: Text(""),
                     onError: (error) {
                       return Lottie.asset(AssetPath.noDataFound);
                     },
                   ),
-
                   const SizedBox(height: 10),
                 ],
               ),
@@ -278,17 +306,18 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(34),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                 ),
                 onPressed: () {
                   Get.to(() => const UpdateStaffAttendanceScreen());
                 },
                 child: Text(
                   "Update Students Attendance",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 10),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontSize: 10),
                 ),
               ),
               OutlinedButton(
@@ -300,15 +329,19 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(34),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                 ),
                 onPressed: () {
-                  Get.to(() => const ViewAttendanceScreen());
+                  Get.to(() =>  ViewAttendanceScreen(staffId: _staffAttendanceController
+                      .staffHomeWorkController.staffDetail.value.staffid.toString(),));
                 },
                 child: Text(
                   "View Students Attendance",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600, color: const Color(0xff1575FF), fontSize: 10),
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xff1575FF),
+                      fontSize: 10),
                 ),
               ),
             ],
@@ -316,107 +349,6 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
         ),
       ),
     );
-  }
-
-  List<Map<String, dynamic>> _getSortData(dynamic data) {
-    final List<Map<String, dynamic>> tmp = [];
-    int index = 1;
-
-    final List<Map<String, dynamic>> toSortData = data ??
-        [
-          {
-            "studentId": 668,
-            "studentName": "AADITYA SHASTRI",
-            "attendance": [
-              {
-                "attendanceId": 673332,
-                "classId": 203,
-                "sectionId": 24,
-                "className": "Class-VII",
-                "sectionName": "GREEN",
-                "markFullDayAbsent": "True",
-                "markHalfDayAbsent": "False",
-                "studentRegisterId": 668,
-                "studentName": "AADITYA SHASTRI",
-                "createdDate": "18/11/2024",
-                "day": "Monday",
-                "createdBy": "9",
-                "others": "False"
-              }
-            ],
-            "attendancePer": "100.00%",
-            "totalDays": "1",
-            "totalAttendedDays": "1"
-          },
-          {
-            "studentId": 801,
-            "studentName": "AARJAV SHARMA",
-            "attendance": [
-              {
-                "attendanceId": 673333,
-                "classId": 203,
-                "sectionId": 24,
-                "className": "Class-VII",
-                "sectionName": "GREEN",
-                "markFullDayAbsent": "True",
-                "markHalfDayAbsent": "False",
-                "studentRegisterId": 801,
-                "studentName": "AARJAV SHARMA",
-                "createdDate": "18/11/2024",
-                "day": "Monday",
-                "createdBy": "9",
-                "others": "False"
-              }
-            ],
-            "attendancePer": "100.00%",
-            "totalDays": "1",
-            "totalAttendedDays": "1"
-          },
-          {
-            "studentId": 712,
-            "studentName": "AEKANSH RAUL",
-            "attendance": [
-              {
-                "attendanceId": 673334,
-                "classId": 203,
-                "sectionId": 24,
-                "className": "Class-VII",
-                "sectionName": "GREEN",
-                "markFullDayAbsent": "False",
-                "markHalfDayAbsent": "False",
-                "studentRegisterId": 712,
-                "studentName": "AEKANSH RAUL",
-                "createdDate": "18/11/2024",
-                "day": "Monday",
-                "createdBy": "9",
-                "others": "False"
-              }
-            ],
-            "attendancePer": "0.00%",
-            "totalDays": "1",
-            "totalAttendedDays": "0"
-          }
-        ];
-
-    // Loop through each student record
-    for (var student in toSortData) {
-      for (var attendance in student["attendance"]) {
-        tmp.add({
-          "index": index, // Add index
-          "Student Name": student["studentName"],
-          "Class Name": attendance["className"],
-          "Section Name": attendance["sectionName"],
-          "markFullDayAbsent": attendance["markFullDayAbsent"],
-          "Date": attendance["createdDate"],
-          "Day": attendance["day"],
-        });
-
-        index++; // Increment index for next record
-      }
-    }
-
-    print("_getSortData sortedData : $tmp"); // Output sorted data
-    return tmp;
   }
 
   String getColumnName(int index) {
@@ -446,7 +378,8 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
     }
   }
 
-  Widget customOutlinedButton(ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
+  Widget customOutlinedButton(
+      ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
     return OutlinedButton(
       style: buttonStyle,
       onPressed: onPressed,
@@ -465,6 +398,66 @@ class _StaffAttendanceScreenState extends State<StaffAttendanceScreen> {
           fontSize: 12),
     ));
   }
+}
+
+Widget customDropDown(
+  String? title,
+  String? buttonValue,
+) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      AppUtil.customText(
+        text: title,
+        style: const TextStyle(
+            fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+      ),
+      const SizedBox(
+        height: 2,
+      ),
+      SizedBox(
+        width: Get.width,
+        child: customOutlinedButton(
+            OutlinedButton.styleFrom(
+              side: const BorderSide(width: 1, color: Color(0xff94A3B8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppUtil.customText(
+                    text: buttonValue,
+                    style: const TextStyle(
+                        color: Color(0xff0F172A),
+                        fontFamily: 'Open Sans',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14),
+                  ),
+                  SvgPicture.asset(
+                    "assets/icons/arrowdown_icon.svg",
+                    height: 20,
+                    width: 20,
+                  ),
+                ],
+              ),
+            ),
+            () {}),
+      )
+    ],
+  );
+}
+
+Widget customOutlinedButton(
+    ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
+  return OutlinedButton(
+    style: buttonStyle,
+    onPressed: onPressed,
+    child: widget,
+  );
 }
 
 //  _selectStaffWidget
@@ -538,8 +531,10 @@ Widget _selectClass({
   required Function(String, String) onChanged,
 }) {
   // Filter the list to include only items where isClassTeacher == true
-  final filteredList =
-      getClassListModel?.data?.where((item) => item.isClassTeacher == true).toList() ?? [];
+  final filteredList = getClassListModel?.data
+          ?.where((item) => item.isClassTeacher == true)
+          .toList() ??
+      [];
 
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -558,8 +553,9 @@ Widget _selectClass({
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             style: Theme.of(context).textTheme.bodyMedium,
-            value: filteredList
-                    .any((item) => item.dataListItemName == _classController.selectedClass.value)
+            value: filteredList.any((item) =>
+                    item.dataListItemName ==
+                    _classController.selectedClass.value)
                 ? _classController.selectedClass.value
                 : null,
             // Ensures proper selection handling
@@ -569,7 +565,8 @@ Widget _selectClass({
                   (item) => item.dataListItemName == newValue,
                 );
 
-                String selectedId = selectedItem?.dataListItemId?.toString() ?? "";
+                String selectedId =
+                    selectedItem?.dataListItemId?.toString() ?? "";
 
                 onChanged(newValue, selectedId);
                 _classController.selectedClass.value = newValue;
@@ -628,7 +625,8 @@ Widget _selectSection({
                   (item) => item.dataListItemName == newValue,
                 );
 
-                String selectedId = selectedItem?.dataListItemId?.toString() ?? "";
+                String selectedId =
+                    selectedItem?.dataListItemId?.toString() ?? "";
 
                 onChanged(newValue, selectedId);
                 _classController.selectedSection.value = newValue;
@@ -639,7 +637,8 @@ Widget _selectSection({
             isExpanded: true,
             underline: const SizedBox(),
             items: getSectionListModel?.data
-                    ?.where((item) => item.dataListItemName != null) // Avoid null names
+                    ?.where((item) =>
+                        item.dataListItemName != null) // Avoid null names
                     .map<DropdownMenuItem<String>>((item) {
                   return DropdownMenuItem<String>(
                     value: item.dataListItemName!,
@@ -658,7 +657,8 @@ Widget _selectSection({
 }
 
 //  Controller
-class ClassController extends GetxController with StateMixin<CheckTowModelData> {
+class ClassController extends GetxController
+    with StateMixin<CheckTowModelData> {
   final prefs = GetStorage();
   RxString selectedSection = "".obs;
   RxString selectedClass = "".obs;
@@ -680,7 +680,8 @@ class ClassController extends GetxController with StateMixin<CheckTowModelData> 
     dynamic response;
     final accessToken = await prefs.read("accessToken");
 
-    final url = Uri.parse("https://stmarysapi.lumensof.in/api/Exam/GetStaffList");
+    final url =
+        Uri.parse("https://stmarysapi.lumensof.in/api/Exam/GetStaffList");
     try {
       change(state, status: RxStatus.loading());
 
@@ -699,8 +700,8 @@ class ClassController extends GetxController with StateMixin<CheckTowModelData> 
         var res = json.decode(response.body);
         final model3 = GetStaffListModel.fromJson(res);
 
-        final checkTowModel =
-            CheckTowModelData(model1: state?.model1, model2: state?.model2, model3: model3);
+        final checkTowModel = CheckTowModelData(
+            model1: state?.model1, model2: state?.model2, model3: model3);
         change(checkTowModel, status: RxStatus.success());
       } else {
         change(null, status: RxStatus.error());
@@ -716,13 +717,17 @@ class ClassController extends GetxController with StateMixin<CheckTowModelData> 
     dynamic response;
     final accessToken = await prefs.read("accessToken");
 
-    final url = "https://stmarysapi.lumensof.in/api/Exam/GetClassList?staff_Id=$staffId";
+    final url =
+        "https://stmarysapi.lumensof.in/api/Exam/GetClassList?staff_Id=$staffId";
     try {
       change(state, status: RxStatus.loading());
 
       response = await http.post(
         Uri.parse(url),
-        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json'
+        },
         body: json.encode({}),
       );
       debugPrint("hitting url $url ");
@@ -733,8 +738,8 @@ class ClassController extends GetxController with StateMixin<CheckTowModelData> 
         var res = json.decode(response.body);
         final model1 = GetClassListModel.fromJson(res);
 
-        final checkTowModel =
-            CheckTowModelData(model1: model1, model2: state?.model2, model3: state?.model3);
+        final checkTowModel = CheckTowModelData(
+            model1: model1, model2: state?.model2, model3: state?.model3);
 
         change(checkTowModel, status: RxStatus.success());
       } else {
@@ -758,7 +763,8 @@ class ClassController extends GetxController with StateMixin<CheckTowModelData> 
       }
 
       // Debugging logs
-      debugPrint("Fetching Section Data: classId = $classId, staffId = $staffId");
+      debugPrint(
+          "Fetching Section Data: classId = $classId, staffId = $staffId");
 
       change(state, status: RxStatus.loading());
 
@@ -820,9 +826,10 @@ class CheckTowModelData {
   });
 }
 
-class AttendanceController extends GetxController with StateMixin<GetStudentTableShowModal> {
+class AttendanceController extends GetxController
+    with StateMixin<GetStudentTableShowModal> {
   dynamic response = [];
-  var isLoading = false.obs;
+  RxBool isLoading = false.obs;
 
   final prefs = GetStorage();
 
@@ -831,19 +838,18 @@ class AttendanceController extends GetxController with StateMixin<GetStudentTabl
     final List<TableData> sortedRecords = [];
     int index = 1;
 
-    final List<Map<String, dynamic>> toSortData = List<Map<String, dynamic>>.from(data);
+    final List<Map<String, dynamic>> toSortData =
+        List<Map<String, dynamic>>.from(data);
 
     // Loop through each student record
     for (var student in toSortData) {
       for (var attendance in student["attendance"]) {
         sortedRecords.add(TableData(
-          index: index,
-          // Add index
           studentName: student["studentName"],
           className: attendance["className"],
           sectionName: attendance["sectionName"],
           markFullDayAbsent: attendance["markFullDayAbsent"],
-          date: attendance["createdDate"],
+          createdDate: attendance["createdDate"],
           day: attendance["day"],
         ));
 
@@ -851,7 +857,8 @@ class AttendanceController extends GetxController with StateMixin<GetStudentTabl
       }
     }
 
-    debugPrint("_getSortData sortedData : $sortedRecords"); // Output sorted data
+    debugPrint(
+        "_getSortData sortedData : $sortedRecords"); // Output sorted data
     return sortedRecords;
   }
 
@@ -890,7 +897,8 @@ class AttendanceController extends GetxController with StateMixin<GetStudentTabl
       isLoading.value = true;
 
       final res = await http.post(
-        Uri.parse('https://stmarysapi.lumensof.in/api/Attendance/ViewStudentAttendance'),
+        Uri.parse(
+            'https://stmarysapi.lumensof.in/api/Attendance/ViewStudentAttendance'),
         headers: headers,
         body: body,
       );
@@ -915,7 +923,8 @@ class AttendanceController extends GetxController with StateMixin<GetStudentTabl
       } else {
         isLoading.value = false;
 
-        debugPrint('Failed to post attendance data with status code: ${res.statusCode}');
+        debugPrint(
+            'Failed to post attendance data with status code: ${res.statusCode}');
       }
     } catch (e) {
       isLoading.value = false;
@@ -927,5 +936,69 @@ class AttendanceController extends GetxController with StateMixin<GetStudentTabl
 
     // You can also return the response or sorted data if needed
     debugPrint('Response: $response');
+  }
+}
+
+class StudentTable extends StatelessWidget {
+  final GetStudentTableShowModal studentsListData;
+
+  const StudentTable({super.key, required this.studentsListData});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        dataTextStyle: Theme.of(context).textTheme.bodySmall,
+        dataRowMaxHeight: 70,
+        columnSpacing: 20,
+        headingRowHeight: 45,
+        border: TableBorder.all(color: const Color(0xFFE2E8F0)),
+        headingRowColor: WidgetStateProperty.all(const Color(0xFFD0E3FF)),
+        showBottomBorder: false,
+        headingTextStyle: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(fontWeight: FontWeight.w600),
+        columns: List.generate(6, (index) {
+          return DataColumn(
+            label: Text(getColumnName(index)),
+          );
+        }),
+        rows: List.generate(studentsListData.tableData?.length ?? 0, (index) {
+          final item = studentsListData.tableData?[index];
+          return DataRow(
+            cells: [
+              DataCell(Text(index.toString() ?? "")), // S.no
+              DataCell(Text(item?.studentName ?? '')), // Student Name
+              DataCell(Text(item?.className ?? '')), // Class
+              DataCell(Text(item?.sectionName ?? '')), // Section
+              DataCell(Text(item?.markFullDayAbsent.toString() ??
+                  '')), // Mark Full Day Present
+              DataCell(Text(item?.day.toString() ?? 'Day')), // Day
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  String getColumnName(int index) {
+    switch (index) {
+      case 0:
+        return 'S.no';
+      case 1:
+        return 'Student Name';
+      case 2:
+        return 'Class';
+      case 3:
+        return 'Section';
+      case 4:
+        return 'Mark Full Day Present';
+      case 5:
+        return 'Day';
+      default:
+        return '';
+    }
   }
 }

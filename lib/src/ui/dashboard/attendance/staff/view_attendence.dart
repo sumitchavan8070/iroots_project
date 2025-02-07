@@ -2,14 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:iroots/src/controller/attendance/staff/view_attendance_controller.dart';
 import 'package:iroots/src/modal/attendance/staffModalClass.dart';
 import 'package:iroots/src/modal/attendance/studentAttendanceModalClass.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/get_class_list_model.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/get_section_list_model.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/get_student_table_show_modal.dart';
+import 'package:iroots/src/ui/dashboard/attendance/staff/staff_attendence.dart';
 import 'package:iroots/src/utility/const.dart';
 import 'package:iroots/src/utility/util.dart';
 
-class ViewAttendanceScreen extends StatelessWidget {
-  const ViewAttendanceScreen({super.key});
+final _classController = Get.put(ClassController());
+final _attendanceController = Get.put(AttendanceController());
+
+final _viewAttendanceController = Get.put(ViewAttendanceController());
+
+class ViewAttendanceScreen extends StatefulWidget {
+  final String staffId;
+  const ViewAttendanceScreen({super.key, required this.staffId});
+
+  @override
+  State<ViewAttendanceScreen> createState() => _ViewAttendanceScreenState();
+}
+
+class _ViewAttendanceScreenState extends State<ViewAttendanceScreen> {
+  String? _selectedClass;
+  String? _selectedSection;
+  String? _selectedStaff;
+  String? _selectedStaffID;
+  String? _selectedSectionID;
+  String? _selectedClassID;
+  final prefs = GetStorage();
+
+  _loadClassFromApi() async {
+    final staffId = widget.staffId;
+    await _classController.fetchClassData(staffId);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _loadClassFromApi();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _classController.selectedClass.value = "";
+    _classController.selectedStaffId.value = "";
+    _classController.selectedSectionID.value = "";
+    _classController.selectedSection.value = "";
+
+    //  for show btn
+    _classController.classIdForAPi.value = "";
+    _classController.sectionIdForAPi.value = "";
+    _classController.createdDateIdForAPi.value = "";
+    _attendanceController.change(GetStudentTableShowModal(tableData: []),
+        status: RxStatus.success());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,52 +90,105 @@ class ViewAttendanceScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  customDropDown1(
-                      "Select Class",
-                      // logic.staffHomeWorkController.staffClass!
-                      //     .dataListItemName,
-                      ""),
                   const SizedBox(height: 10),
-                  customDropDown1("Select Section", ""
+                  _classController.obx(
+                    (state) {
+                      return _selectClass(
+                        title: "Select Class",
+                        onChanged: (selectedClass, selectedClassID) async {
+                          setState(() {
+                            _selectedSection = selectedClass;
+                            _selectedSectionID = selectedClassID;
+                          });
+                          debugPrint(
+                              "selectedClass $selectedClass || selectedClassID $selectedClassID");
+                          final staffId = widget.staffId;
 
-                      // logic
-                      //     .staffHomeWorkController.staffSection!.dataListItemName,
-                      ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  customDropDown(
-                    logic,
-                    "Select Student",
-                    "Please Select Student",
-                    logic.studentDataList,
-                    (newValue) {
-                      logic.selectedStudent = newValue;
+                          await _classController.fetchSectionData(
+                            selectedClassID,
+                            staffId.toString(),
+                          );
+                          _classController.classIdForAPi.value =
+                              selectedClassID;
+                          _classController.classNameIdForAPi.value =
+                              selectedClass;
+                        },
+                        getClassListModel: state?.model1 ?? GetClassListModel(),
+                        context: context,
+                      );
                     },
-                    logic.selectedStudent,
                   ),
+                  // customDropDown1(
+                  //     "Select Class",
+                  //     logic.staffHomeWorkController.staffDetail.value.!
+                  //         .dataListItemName,
+                  //     ""),
+                  const SizedBox(height: 10),
+                  _classController.obx(
+                    (state) {
+                      return _selectSection(
+                        title: "Select Section",
+                        onChanged: (selectedSection, selectedSectionID) {
+                          setState(() {
+                            _selectedSection = selectedSection;
+                            _selectedSectionID = selectedSectionID;
+                          });
+                          _classController.sectionIdForAPi.value =
+                              selectedSectionID;
+                          _classController.sectionNameIdForAPi.value =
+                              selectedSection;
+
+                          debugPrint(
+                              "selectedClass $_selectedSection || selectedClassID $selectedSectionID");
+                        },
+                        getSectionListModel:
+                            state?.model2 ?? GetSectionListModel(),
+                        context: context,
+                      );
+                    },
+                  ),
+
+                  // customDropDown1("Select Section", ""
+                  //
+                  //     // logic
+                  //     //     .staffHomeWorkController.staffSection!.dataListItemName,
+                  //     ),
                   const SizedBox(
                     height: 10,
                   ),
-
+                  // customDropDown(
+                  //   logic,
+                  //   "Select Student",
+                  //   "Please Select Student",
+                  //   logic.studentDataList,
+                  //   (newValue) {
+                  //     logic.selectedStudent = newValue;
+                  //   },
+                  //   logic.selectedStudent,
+                  // ),
+                  const SizedBox(height: 10),
 
                   AppUtil.customText(
                     text: "From Date",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+                        fontFamily: 'Open Sans',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
                   ),
                   const SizedBox(
                     height: 5,
                   ),
                   customOutlinedButton(
                       OutlinedButton.styleFrom(
-                        side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
+                        side: const BorderSide(
+                            width: 1.0, color: Color(0xff94A3B8)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,10 +196,11 @@ class ViewAttendanceScreen extends StatelessWidget {
                             AppUtil.customText(
                               text: logic.selectedAssignmentDate,
                               style: const TextStyle(
-                                  color: Color(0xff0F172A),
-                                  fontFamily: 'Open Sans',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14),
+                                color: Color(0xff0F172A),
+                                fontFamily: 'Open Sans',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                              ),
                             ),
                             SvgPicture.asset(
                               "assets/icons/calendar_icon.svg",
@@ -104,26 +212,29 @@ class ViewAttendanceScreen extends StatelessWidget {
                       ), () {
                     logic.pickDateDialog(context, 0);
                   }),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   AppUtil.customText(
                     text: "To Date",
                     style: const TextStyle(
-                        fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+                      fontFamily: 'Open Sans',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(
                     height: 5,
                   ),
                   customOutlinedButton(
                       OutlinedButton.styleFrom(
-                        side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
+                        side: const BorderSide(
+                            width: 1.0, color: Color(0xff94A3B8)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,13 +268,15 @@ class ViewAttendanceScreen extends StatelessWidget {
                         width: Get.width,
                         child: customOutlinedButton(
                             OutlinedButton.styleFrom(
-                              side: const BorderSide(width: 1.0, color: Color(0xff94A3B8)),
+                              side: const BorderSide(
+                                  width: 1.0, color: Color(0xff94A3B8)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 0, vertical: 10),
                               child: AppUtil.customText(
                                 text: "Show",
                                 style: const TextStyle(
@@ -252,8 +365,8 @@ class ViewAttendanceScreen extends StatelessWidget {
                                   controller: logic.horizontalScrollController,
                                   scrollDirection: Axis.horizontal,
                                   child: Scrollable(
-                                    viewportBuilder:
-                                        (BuildContext context, ViewportOffset position) {
+                                    viewportBuilder: (BuildContext context,
+                                        ViewportOffset position) {
                                       return DataTable(
                                         border: TableBorder.all(),
                                         columns: [
@@ -297,12 +410,16 @@ class ViewAttendanceScreen extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12),
                                           )),
-                                          for (var date in logic.allBetweenDates)
+                                          for (var date
+                                              in logic.allBetweenDates)
                                             DataColumn(
                                               label: AppUtil.customText(
                                                 textAlign: TextAlign.center,
                                                 // text: date,
-                                                text: date.split("/").first.trim(),
+                                                text: date
+                                                    .split("/")
+                                                    .first
+                                                    .trim(),
                                                 style: const TextStyle(
                                                     color: Color(0xff0F172A),
                                                     fontFamily: 'Open Sans',
@@ -325,12 +442,18 @@ class ViewAttendanceScreen extends StatelessWidget {
                                           DataRow(
                                             cells: [
                                               datacell("${1}"),
-                                              datacell(logic.attendance[0]!.studentName),
-                                              datacell(logic.attendance[0]!.className),
-                                              datacell(logic.attendance[0]!.sectionName),
-                                              for (var date in logic.allBetweenDates)
-                                                buildDateComparisonWidget(date, logic),
-                                              datacell(logic.studentData!.attendancePer),
+                                              datacell(logic
+                                                  .attendance[0]!.studentName),
+                                              datacell(logic
+                                                  .attendance[0]!.className),
+                                              datacell(logic
+                                                  .attendance[0]!.sectionName),
+                                              for (var date
+                                                  in logic.allBetweenDates)
+                                                buildDateComparisonWidget(
+                                                    date, logic),
+                                              datacell(logic
+                                                  .studentData!.attendancePer),
                                             ],
                                           ),
                                         ],
@@ -355,84 +478,104 @@ class ViewAttendanceScreen extends StatelessWidget {
                                     thickness: 8,
                                     radius: const Radius.circular(8),
                                     interactive: true,
-                                    controller: logic.horizontalScrollController,
+                                    controller:
+                                        logic.horizontalScrollController,
                                     thumbVisibility: true,
                                     child: SingleChildScrollView(
-                                      controller: logic.horizontalScrollController,
+                                      controller:
+                                          logic.horizontalScrollController,
                                       scrollDirection: Axis.horizontal,
                                       child: Scrollable(
-                                        viewportBuilder:
-                                            (BuildContext context, ViewportOffset position) {
-                                          return DataTable(border: TableBorder.all(), columns: [
-                                            DataColumn(
-                                                label: AppUtil.customText(
-                                              textAlign: TextAlign.center,
-                                              text: "S. no.",
-                                              style: const TextStyle(
-                                                  color: Color(0xff0F172A),
-                                                  fontFamily: 'Open Sans',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                            )),
-                                            DataColumn(
-                                                label: AppUtil.customText(
-                                              textAlign: TextAlign.center,
-                                              text: "Student Name",
-                                              style: const TextStyle(
-                                                  color: Color(0xff0F172A),
-                                                  fontFamily: 'Open Sans',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                            )),
-                                            DataColumn(
-                                                label: AppUtil.customText(
-                                              textAlign: TextAlign.center,
-                                              text: "Class",
-                                              style: const TextStyle(
-                                                  color: Color(0xff0F172A),
-                                                  fontFamily: 'Open Sans',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                            )),
-                                            DataColumn(
-                                                label: AppUtil.customText(
-                                              textAlign: TextAlign.center,
-                                              text: "Section",
-                                              style: const TextStyle(
-                                                  color: Color(0xff0F172A),
-                                                  fontFamily: 'Open Sans',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                            )),
-                                            for (var date in logic.allBetweenDates)
-                                              DataColumn(
-                                                label: AppUtil.customText(
+                                        viewportBuilder: (BuildContext context,
+                                            ViewportOffset position) {
+                                          return DataTable(
+                                              border: TableBorder.all(),
+                                              columns: [
+                                                DataColumn(
+                                                    label: AppUtil.customText(
                                                   textAlign: TextAlign.center,
-                                                  // text: date,
-                                                  text: date.split("/").first.trim(),
+                                                  text: "S. no.",
                                                   style: const TextStyle(
                                                       color: Color(0xff0F172A),
                                                       fontFamily: 'Open Sans',
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                       fontSize: 12),
-                                                ),
-                                              ),
-                                            DataColumn(
-                                                label: AppUtil.customText(
-                                              textAlign: TextAlign.center,
-                                              text: "Attendance %",
-                                              style: const TextStyle(
-                                                  color: Color(0xff0F172A),
-                                                  fontFamily: 'Open Sans',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                            )),
-                                          ], rows: [
-                                            for (var index = 0;
-                                                index < logic.studentListData.length;
-                                                index++)
-                                              buildDataRow(index, logic),
-                                          ]);
+                                                )),
+                                                DataColumn(
+                                                    label: AppUtil.customText(
+                                                  textAlign: TextAlign.center,
+                                                  text: "Student Name",
+                                                  style: const TextStyle(
+                                                      color: Color(0xff0F172A),
+                                                      fontFamily: 'Open Sans',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12),
+                                                )),
+                                                DataColumn(
+                                                    label: AppUtil.customText(
+                                                  textAlign: TextAlign.center,
+                                                  text: "Class",
+                                                  style: const TextStyle(
+                                                      color: Color(0xff0F172A),
+                                                      fontFamily: 'Open Sans',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12),
+                                                )),
+                                                DataColumn(
+                                                    label: AppUtil.customText(
+                                                  textAlign: TextAlign.center,
+                                                  text: "Section",
+                                                  style: const TextStyle(
+                                                      color: Color(0xff0F172A),
+                                                      fontFamily: 'Open Sans',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12),
+                                                )),
+                                                for (var date
+                                                    in logic.allBetweenDates)
+                                                  DataColumn(
+                                                    label: AppUtil.customText(
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      // text: date,
+                                                      text: date
+                                                          .split("/")
+                                                          .first
+                                                          .trim(),
+                                                      style: const TextStyle(
+                                                          color:
+                                                              Color(0xff0F172A),
+                                                          fontFamily:
+                                                              'Open Sans',
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 12),
+                                                    ),
+                                                  ),
+                                                DataColumn(
+                                                    label: AppUtil.customText(
+                                                  textAlign: TextAlign.center,
+                                                  text: "Attendance %",
+                                                  style: const TextStyle(
+                                                      color: Color(0xff0F172A),
+                                                      fontFamily: 'Open Sans',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12),
+                                                )),
+                                              ],
+                                              rows: [
+                                                for (var index = 0;
+                                                    index <
+                                                        logic.studentListData
+                                                            .length;
+                                                    index++)
+                                                  buildDataRow(index, logic),
+                                              ]);
                                         },
                                       ),
                                     ),
@@ -468,13 +611,15 @@ class ViewAttendanceScreen extends StatelessWidget {
                     child: customOutlinedButton(
                         OutlinedButton.styleFrom(
                           backgroundColor: ConstClass.themeColor,
-                          side: BorderSide(width: 1.5, color: ConstClass.themeColor),
+                          side: BorderSide(
+                              width: 1.5, color: ConstClass.themeColor),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
                         Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 12),
                             child: AppUtil.customText(
                               text: "Mark Attendance",
                               style: const TextStyle(
@@ -497,13 +642,15 @@ class ViewAttendanceScreen extends StatelessWidget {
                           width: Get.width,
                           child: customOutlinedButton(
                               OutlinedButton.styleFrom(
-                                side: const BorderSide(width: 1.5, color: Color(0xff0DB166)),
+                                side: const BorderSide(
+                                    width: 1.5, color: Color(0xff0DB166)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 10),
                                 child: AppUtil.customText(
                                   text: "Export to Excel",
                                   style: const TextStyle(
@@ -528,7 +675,8 @@ class ViewAttendanceScreen extends StatelessWidget {
     );
   }
 
-  Widget customOutlinedButton(ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
+  Widget customOutlinedButton(
+      ButtonStyle buttonStyle, Widget widget, Function() onPressed) {
     return OutlinedButton(
       style: buttonStyle,
       onPressed: onPressed,
@@ -561,8 +709,10 @@ class ViewAttendanceScreen extends StatelessWidget {
       children: [
         AppUtil.customText(
           text: dropDownText,
-          style:
-              const TextStyle(fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+          style: const TextStyle(
+              fontFamily: 'Open Sans',
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
         ),
         const SizedBox(
           height: 2,
@@ -576,7 +726,9 @@ class ViewAttendanceScreen extends StatelessWidget {
                 ),
                 value: value,
                 style: const TextStyle(
-                    fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+                    fontFamily: 'Open Sans',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
                 items: staffDataList.map((item) {
                   return DropdownMenuItem<StaffData>(
                       value: item,
@@ -640,8 +792,10 @@ class ViewAttendanceScreen extends StatelessWidget {
       children: [
         AppUtil.customText(
           text: title,
-          style:
-              const TextStyle(fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 14),
+          style: const TextStyle(
+              fontFamily: 'Open Sans',
+              fontWeight: FontWeight.w600,
+              fontSize: 14),
         ),
         const SizedBox(
           height: 2,
@@ -656,7 +810,8 @@ class ViewAttendanceScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -682,11 +837,12 @@ class ViewAttendanceScreen extends StatelessWidget {
     );
   }
 
-  DataCell buildDateComparisonWidget(String date, ViewAttendanceController logic) {
+  DataCell buildDateComparisonWidget(
+      String date, ViewAttendanceController logic) {
     for (var entry in logic.attendance) {
       if (entry!.createdDate == date) {
-        return buildAttendanceIcon(
-            entry.markFullDayAbsent == "True", entry.markHalfDayAbsent == " True");
+        return buildAttendanceIcon(entry.markFullDayAbsent == "True",
+            entry.markHalfDayAbsent == " True");
       }
     }
     return const DataCell(SizedBox());
@@ -695,8 +851,8 @@ class ViewAttendanceScreen extends StatelessWidget {
   DataCell allbuildDateComparisonWidget(String date, Datum? logic) {
     for (var entry in logic!.attendance) {
       if (entry!.createdDate == date) {
-        return buildAttendanceIcon(
-            entry.markFullDayAbsent == "True", entry.markHalfDayAbsent == " True");
+        return buildAttendanceIcon(entry.markFullDayAbsent == "True",
+            entry.markHalfDayAbsent == " True");
       }
     }
     return const DataCell(SizedBox());
@@ -726,7 +882,10 @@ class ViewAttendanceScreen extends StatelessWidget {
       return DataCell(AppUtil.customText(
         text: "✖",
         style: const TextStyle(
-            color: Colors.red, fontFamily: 'Open Sans', fontWeight: FontWeight.w600, fontSize: 16),
+            color: Colors.red,
+            fontFamily: 'Open Sans',
+            fontWeight: FontWeight.w600,
+            fontSize: 16),
       ));
     } else {
       return const DataCell(SizedBox());
@@ -840,10 +999,144 @@ class ViewAttendanceScreen extends StatelessWidget {
       datacell(student!.attendance[0]!.className!),
       datacell(student.attendance[0]!.studentName),
       datacell(student.attendance[0]!.sectionName),
-      for (var date in logic.allBetweenDates) allbuildDateComparisonWidget(date, student),
+      for (var date in logic.allBetweenDates)
+        allbuildDateComparisonWidget(date, student),
       datacell(student.attendancePer),
     ];
 
     return DataRow(cells: cells);
+  }
+
+  // _selectClass
+  Widget _selectClass({
+    required GetClassListModel? getClassListModel,
+    required String? title,
+    required BuildContext context,
+    required Function(String, String) onChanged,
+  }) {
+    // Filter the list to include only items where isClassTeacher == true
+    final filteredList = getClassListModel?.data
+            ?.where((item) => item.isClassTeacher == true)
+            .toList() ??
+        [];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey, width: 1),
+            ),
+            child: DropdownButton<String>(
+              hint: Text(
+                title ?? "",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              style: Theme.of(context).textTheme.bodyMedium,
+              value: filteredList.any((item) =>
+                      item.dataListItemName ==
+                      _classController.selectedClass.value)
+                  ? _classController.selectedClass.value
+                  : null,
+              // Ensures proper selection handling
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  var selectedItem = filteredList.firstWhere(
+                    (item) => item.dataListItemName == newValue,
+                  );
+
+                  String selectedId =
+                      selectedItem?.dataListItemId?.toString() ?? "";
+
+                  onChanged(newValue, selectedId);
+                  _classController.selectedClass.value = newValue;
+
+                  debugPrint("Selected dropdown value: $newValue");
+                }
+              },
+              isExpanded: true,
+              underline: const SizedBox(),
+              items: filteredList.map<DropdownMenuItem<String>>((item) {
+                return DropdownMenuItem<String>(
+                  value: item.dataListItemName!,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(item.dataListItemName!),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _selectSection({
+    required GetSectionListModel? getSectionListModel,
+    required String? title,
+    required Function(String, String) onChanged,
+    required BuildContext context,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey, width: 1),
+            ),
+            child: DropdownButton<String>(
+              hint: Text(
+                title ?? "",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              style: Theme.of(context).textTheme.bodyMedium,
+              value: _classController.selectedSection.value.isNotEmpty
+                  ? _classController.selectedSection.value
+                  : null,
+              // Ensures proper null handling
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  var selectedItem = getSectionListModel?.data?.firstWhere(
+                    (item) => item.dataListItemName == newValue,
+                  );
+
+                  String selectedId =
+                      selectedItem?.dataListItemId?.toString() ?? "";
+
+                  onChanged(newValue, selectedId);
+                  _classController.selectedSection.value = newValue;
+
+                  debugPrint("Selected section: $newValue");
+                }
+              },
+              isExpanded: true,
+              underline: const SizedBox(),
+              items: getSectionListModel?.data
+                      ?.where((item) =>
+                          item.dataListItemName != null) // Avoid null names
+                      .map<DropdownMenuItem<String>>((item) {
+                    return DropdownMenuItem<String>(
+                      value: item.dataListItemName!,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(item.dataListItemName!),
+                      ),
+                    );
+                  }).toList() ??
+                  [],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

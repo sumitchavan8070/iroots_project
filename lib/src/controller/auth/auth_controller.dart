@@ -231,6 +231,10 @@ class AuthController extends GetxController {
           box.write("userId", loginResponse.data!.userId);
           String userRole = roleIdToName[loginResponse.data!.userRoleId]!;
           box.write("userRole", userRole);
+
+
+
+
           _hideProgress();
           Get.offAll(() => const DashBoardPageScreen());
         } else if (loginResponse.responseCode == "500") {

@@ -1,65 +1,90 @@
 class GetStudentTableShowModal {
   GetStudentTableShowModal({
-      this.tableData,});
+    this.tableData,
+  });
 
   GetStudentTableShowModal.fromJson(dynamic json) {
-    if (json['table_data'] != null) {
+    if (json['tabledata'] != null) {
       tableData = [];
-      json['table_data'].forEach((v) {
+      json['tabledata'].forEach((v) {
         tableData?.add(TableData.fromJson(v));
       });
     }
   }
+
   List<TableData>? tableData;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if (tableData != null) {
-      map['table_data'] = tableData?.map((v) => v.toJson()).toList();
+      map['tabledata'] = tableData?.map((v) => v.toJson()).toList();
     }
     return map;
   }
-
 }
 
 class TableData {
   TableData({
-      this.index,
-      this.studentName,
-      this.className,
-      this.sectionName,
-      this.markFullDayAbsent,
-      this.date,
-      this.day,});
-
+    this.attendanceId,
+    this.classId,
+    this.sectionId,
+    this.className,
+    this.sectionName,
+    this.markFullDayAbsent,
+    this.markHalfDayAbsent,
+    this.studentRegisterId,
+    this.studentName,
+    this.createdDate,
+    this.day,
+    this.createdBy,
+    this.others,
+  });
 
   TableData.fromJson(dynamic json) {
-    index = json['index'];
-    studentName = json['Student Name'];
-    className = json['Class Name'];
-    sectionName = json['Section Name'];
+    attendanceId = json['attendanceId'];
+    classId = json['classId'];
+    sectionId = json['sectionId'];
+    className = json['className'];
+    sectionName = json['sectionName'];
     markFullDayAbsent = json['markFullDayAbsent'];
-    date = json['Date'];
-    day = json['Day'];
+    markHalfDayAbsent = json['markHalfDayAbsent'];
+    studentRegisterId = json['studentRegisterId'];
+    studentName = json['studentName'];
+    createdDate = json['createdDate'];
+    day = json['day'];
+    createdBy = json['createdBy'];
+    others = json['others'];
   }
-  num? index;
-  String? studentName;
+
+  int? attendanceId;
+  int? classId;
+  int? sectionId;
   String? className;
   String? sectionName;
   String? markFullDayAbsent;
-  String? date;
+  String? markHalfDayAbsent;
+  int? studentRegisterId;
+  String? studentName;
+  String? createdDate;
   String? day;
+  String? createdBy;
+  String? others;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['index'] = index;
-    map['Student Name'] = studentName;
-    map['Class Name'] = className;
-    map['Section Name'] = sectionName;
+    map['attendanceId'] = attendanceId;
+    map['classId'] = classId;
+    map['sectionId'] = sectionId;
+    map['className'] = className;
+    map['sectionName'] = sectionName;
     map['markFullDayAbsent'] = markFullDayAbsent;
-    map['Date'] = date;
-    map['Day'] = day;
+    map['markHalfDayAbsent'] = markHalfDayAbsent;
+    map['studentRegisterId'] = studentRegisterId;
+    map['studentName'] = studentName;
+    map['createdDate'] = createdDate;
+    map['day'] = day;
+    map['createdBy'] = createdBy;
+    map['others'] = others;
     return map;
   }
-
 }
